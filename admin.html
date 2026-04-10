@@ -2,18 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#075E54">
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/whatsapp.png">
-    
-    <title>QuizApp - Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#F4ACB7">
+    <title>Admin Login - Quiz App</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* Reset untuk admin page */
+        /* Reset untuk admin page - disesuaikan dengan tema feminin dari style.css */
         * {
             margin: 0;
             padding: 0;
@@ -21,15 +16,15 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            color: #333;
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary, #FFF9F7);
+            color: var(--text-primary, #4A3B42);
             min-height: 100vh;
         }
         
         [data-theme="dark"] body {
-            background: #121212;
-            color: #ffffff;
+            background: var(--dark-bg-primary, #2D2A3A);
+            color: var(--dark-text-primary, #F7E8ED);
         }
         
         /* App Container */
@@ -41,22 +36,22 @@
             flex-direction: column;
         }
         
-        /* Header - FIXED: Hanya satu tombol */
+        /* Header - menggunakan warna feminin */
         .topbar {
-            background: #25D366;
+            background: linear-gradient(135deg, #F4ACB7, #E5989B);
             color: white;
             padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         
         .topbar h1 {
-            font-size: 20px;
+            font-size: 1.2rem;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -68,15 +63,14 @@
             gap: 10px;
         }
         
-        /* HANYA SATU TOMBOL - SIMPLE */
         .btn {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
             padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
@@ -88,11 +82,7 @@
         
         .btn:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
-        }
-        
-        .btn i {
-            font-size: 16px;
+            transform: translateY(-2px);
         }
         
         /* Main Content */
@@ -106,17 +96,18 @@
         
         /* Card */
         .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            padding: 30px;
+            background: var(--bg-secondary, #FFFFFF);
+            border-radius: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 32px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            transition: all 0.2s;
         }
         
         [data-theme="dark"] .card {
-            background: #1e1e1e;
-            border: 1px solid #333;
+            background: #3A3548;
+            border: 1px solid #5B526E;
         }
         
         /* Form Styles */
@@ -133,113 +124,102 @@
         }
         
         .form-group label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #666;
-        }
-        
-        [data-theme="dark"] .form-group label {
-            color: #aaa;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary, #8B6F7A);
         }
         
         .form-group input {
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border-color, #FFE4DE);
+            border-radius: 60px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: var(--bg-tertiary, #FFF5F2);
+            color: var(--text-primary, #4A3B42);
             width: 100%;
-            background: #fafafa;
-            color: #333;
-        }
-        
-        [data-theme="dark"] .form-group input {
-            background: #2d2d2d;
-            border-color: #444;
-            color: white;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #25D366;
-            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+            border-color: #F4ACB7;
+            box-shadow: 0 0 0 3px rgba(244,172,183,0.2);
         }
         
-        /* Login Button */
+        /* Login Button - feminin */
         .btn-primary {
-            background: #25D366;
+            background: linear-gradient(135deg, #F4ACB7, #E5989B);
             color: white;
             border: none;
             padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
             width: 100%;
-            transition: all 0.3s;
+            transition: all 0.2s;
             margin-top: 10px;
         }
         
         .btn-primary:hover {
-            background: #128C7E;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            box-shadow: 0 6px 14px rgba(244,172,183,0.4);
         }
         
         /* Status Messages */
         #loginStatus {
             margin-top: 20px;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 12px;
+            border-radius: 60px;
+            font-size: 0.85rem;
             text-align: center;
         }
         
         #loginStatus.success {
-            background: rgba(37, 211, 102, 0.1);
-            color: #128C7E;
-            border: 1px solid rgba(37, 211, 102, 0.3);
+            background: rgba(244,172,183,0.15);
+            color: #B05E6B;
+            border: 1px solid rgba(244,172,183,0.4);
         }
         
         #loginStatus.error {
-            background: rgba(255, 59, 48, 0.1);
-            color: #ff3b30;
-            border: 1px solid rgba(255, 59, 48, 0.3);
+            background: rgba(255,100,100,0.1);
+            color: #E5989B;
+            border: 1px solid rgba(229,152,155,0.4);
         }
         
         /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
-            color: #666;
-            font-size: 14px;
-            border-top: 1px solid #e0e0e0;
+            color: var(--text-muted, #B8A1AE);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color, #FFE4DE);
             margin-top: 40px;
-        }
-        
-        [data-theme="dark"] .footer {
-            color: #aaa;
-            border-top-color: #333;
         }
         
         /* Theme Toggle */
         .theme-switcher {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #25D366;
+            bottom: 24px;
+            right: 24px;
+            width: 52px;
+            height: 52px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #F4ACB7, #CDB4DB);
             color: white;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 100;
-            font-size: 20px;
+            font-size: 1.3rem;
+            transition: all 0.2s;
+        }
+        
+        .theme-switcher:hover {
+            transform: scale(1.05);
         }
         
         /* Mobile Responsive */
@@ -247,24 +227,21 @@
             .topbar {
                 padding: 12px 16px;
             }
-            
             .topbar h1 {
-                font-size: 18px;
+                font-size: 1rem;
             }
-            
             .card {
-                padding: 20px;
-                margin: 0 10px;
+                padding: 24px;
+                margin: 0 12px;
             }
-            
-            .btn {
-                padding: 8px 12px;
-                min-height: 44px;
-                font-size: 13px;
+            .btn span {
+                display: none;
             }
-            
+            .btn i {
+                font-size: 1.2rem;
+            }
             .theme-switcher {
-                bottom: 70px;
+                bottom: 16px;
                 right: 16px;
                 width: 44px;
                 height: 44px;
@@ -275,21 +252,11 @@
             .topbar h1 span {
                 display: none;
             }
-            
-            .topbar h1 i {
-                margin-right: 0;
-            }
-            
             .btn {
                 padding: 10px;
             }
-            
             .btn span {
                 display: none;
-            }
-            
-            .btn i {
-                font-size: 18px;
             }
         }
         
@@ -300,13 +267,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: #075E54;
+            background: #F4ACB7;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
         }
         
         #splash-screen.hidden {
@@ -318,23 +285,23 @@
             width: 80px;
             height: 80px;
             background: white;
-            border-radius: 20px;
+            border-radius: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            animation: pulse 2s infinite;
+            animation: pulse 1.5s infinite;
         }
         
         .splash-logo i {
             font-size: 40px;
-            color: #25D366;
+            color: #F4ACB7;
         }
         
         .splash-text {
             color: white;
-            font-size: 18px;
-            font-weight: 500;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
         
         @keyframes pulse {
@@ -353,14 +320,12 @@
     </div>
 
     <div class="app">
-        <!-- Header - HANYA SATU TOMBOL -->
         <header class="topbar">
             <h1>
                 <i class="fas fa-user-shield"></i>
                 <span>Admin Login</span>
             </h1>
             <div class="top-actions">
-                <!-- SATU TOMBOL SAJA -->
                 <a href="index.html" class="btn">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
@@ -368,32 +333,25 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="container">
             <div class="card">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(145deg, #F4ACB7, #E5989B); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
                         <i class="fas fa-lock" style="color: white; font-size: 32px;"></i>
                     </div>
-                    <h2 style="margin-bottom: 8px;">Admin Access</h2>
-                    <p style="color: #666; font-size: 14px;">Silakan login dengan akun admin</p>
+                    <h2 style="margin-bottom: 6px;">Selamat Datang</h2>
+                    <p style="color: var(--text-muted, #B8A1AE); font-size: 0.85rem;">Masuk dengan akun admin</p>
                 </div>
                 
                 <form id="loginForm" class="stack">
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <div style="position: relative;">
-                            <i class="fas fa-envelope" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999;"></i>
-                            <input type="email" id="email" placeholder="admin@example.com" required style="padding-left: 45px;">
-                        </div>
+                        <input type="email" id="email" placeholder="admin@example.com" required autocomplete="email">
                     </div>
                     
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <div style="position: relative;">
-                            <i class="fas fa-lock" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999;"></i>
-                            <input type="password" id="password" placeholder="••••••••" required style="padding-left: 45px;">
-                        </div>
+                        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
                     </div>
                     
                     <button type="submit" class="btn-primary">
@@ -403,197 +361,166 @@
                 
                 <div id="loginStatus"></div>
                 
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
-                    <p style="color: #666; font-size: 12px; text-align: center;">
-                        <i class="fas fa-info-circle"></i> Hanya admin terdaftar yang dapat login
-                    </p>
+                <div style="margin-top: 24px; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+                    <i class="fas fa-shield-alt"></i> Hanya admin terverifikasi
                 </div>
             </div>
         </main>
 
-        <!-- Footer -->
         <footer class="footer">
-            <small>© 2024 QuizApp • Admin Login</small>
+            <small>© 2025 Quiz App • Admin Area</small>
         </footer>
         
-        <!-- Theme Toggle -->
         <button id="themeToggle" class="theme-switcher">
             <i class="fas fa-moon"></i>
         </button>
     </div>
 
-    <!-- JavaScript -->
-    <script>
-        // Hide splash screen
+    <!-- Firebase Configuration - BARU (quiz-warohmah) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+
+        // Konfigurasi Firebase baru - quiz-warohmah
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
+            authDomain: "quiz-warohmah.firebaseapp.com",
+            projectId: "quiz-warohmah",
+            storageBucket: "quiz-warohmah.firebasestorage.app",
+            messagingSenderId: "271883195532",
+            appId: "1:271883195532:web:723ea686eb8cba402397a9",
+            measurementId: "G-J39252WX95"
+        };
+
+        // Inisialisasi Firebase sekali
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Cek apakah sudah login sebelumnya
+        const adminToken = localStorage.getItem('adminToken');
+        if (adminToken) {
+            // Redirect ke edit.html jika sudah login
+            window.location.href = 'edit.html';
+        }
+
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const loginStatus = document.getElementById('loginStatus');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Hilangkan splash screen
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const splashScreen = document.getElementById('splash-screen');
-                if (splashScreen) {
-                    splashScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        splashScreen.style.display = 'none';
-                    }, 500);
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.classList.add('hidden');
+                    setTimeout(() => splash.remove(), 500);
                 }
-            }, 500);
+            }, 400);
         });
 
-        // Theme Management
+        // Theme Management (sinkron dengan style.css)
         function initTheme() {
             const savedTheme = localStorage.getItem('quiz-theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme === 'dark' || (!savedTheme && prefersDark) ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', theme);
             const themeToggle = document.getElementById('themeToggle');
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                if (themeToggle) {
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                }
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                if (themeToggle) {
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                }
+            if (themeToggle) {
+                themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             }
         }
 
         function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const currentTheme = document.body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            const themeToggle = document.getElementById('themeToggle');
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
+            document.body.setAttribute('data-theme', newTheme);
             localStorage.setItem('quiz-theme', newTheme);
-            
+            const themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {
-                themeToggle.innerHTML = newTheme === 'dark' 
-                    ? '<i class="fas fa-sun"></i>' 
-                    : '<i class="fas fa-moon"></i>';
+                themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            initTheme();
-            
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                themeToggle.addEventListener('click', toggleTheme);
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+        initTheme();
+
+        // Login handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showStatus('Email dan password harus diisi', 'error');
+                return;
             }
-            
-            // Check if already logged in
-            const adminToken = localStorage.getItem('adminToken');
-            if (adminToken) {
-                // Redirect to edit.html jika sudah login
-                window.location.href = 'edit.html';
+
+            showStatus('Memeriksa kredensial...', 'info');
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log('Login sukses:', user.email);
+                
+                // Simpan token dan email
+                localStorage.setItem('adminToken', user.uid);
+                localStorage.setItem('adminEmail', user.email);
+                showStatus('Login berhasil! Mengalihkan...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'edit.html';
+                }, 800);
+            } catch (error) {
+                console.error('Firebase login error:', error.code, error.message);
+                let msg = 'Login gagal. ';
+                switch (error.code) {
+                    case 'auth/invalid-login-credentials':
+                        msg += 'Email atau password salah.';
+                        break;
+                    case 'auth/user-not-found':
+                        msg += 'Akun tidak ditemukan.';
+                        break;
+                    case 'auth/wrong-password':
+                        msg += 'Password salah.';
+                        break;
+                    case 'auth/too-many-requests':
+                        msg += 'Terlalu banyak percobaan. Coba lagi nanti.';
+                        break;
+                    case 'auth/network-request-failed':
+                        msg += 'Periksa koneksi internet.';
+                        break;
+                    default:
+                        msg += error.message;
+                }
+                showStatus(msg, 'error');
             }
-            
-            // Setup form submission
-            setupLoginForm();
         });
 
-        // Login Form Handler
-        function setupLoginForm() {
-            const loginForm = document.getElementById('loginForm');
-            const loginStatus = document.getElementById('loginStatus');
-            
-            if (!loginForm) return;
-            
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-                if (!email || !password) {
-                    loginStatus.innerHTML = '<div class="error">Email dan password harus diisi</div>';
-                    loginStatus.className = 'error';
-                    return;
-                }
-                
-                loginStatus.innerHTML = '<div>Memproses login...</div>';
-                loginStatus.className = '';
-                
-                try {
-                    // Import Firebase modules
-                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js");
-                    const { getAuth, signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js");
-                    
-                    // Firebase config
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyDdTjMnaetKZ9g0Xsh9sR3H0Otm_nFyy8o",
-                        authDomain: "quizappfaizul.firebaseapp.com",
-                        projectId: "quizappfaizul",
-                        storageBucket: "quizappfaizul.firebasestorage.app",
-                        messagingSenderId: "177544522930",
-                        appId: "1:177544522930:web:354794b407cf29d86cedab"
-                    };
-                    
-                    // Initialize Firebase
-                    const app = initializeApp(firebaseConfig);
-                    const auth = getAuth(app);
-                    
-                    // Sign in
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    
-                    // Success
-                    loginStatus.innerHTML = '<div class="success">Login berhasil! Mengarahkan...</div>';
-                    loginStatus.className = 'success';
-                    
-                    // Save token
-                    localStorage.setItem('adminToken', user.uid);
-                    localStorage.setItem('adminEmail', user.email);
-                    
-                    // Redirect
-                    setTimeout(() => {
-                        window.location.href = 'edit.html';
-                    }, 1000);
-                    
-                } catch (error) {
-                    console.error('Login error:', error);
-                    
-                    let errorMessage = 'Login gagal. Cek email dan password.';
-                    if (error.code === 'auth/invalid-email') {
-                        errorMessage = 'Email tidak valid';
-                    } else if (error.code === 'auth/user-not-found') {
-                        errorMessage = 'Akun tidak ditemukan';
-                    } else if (error.code === 'auth/wrong-password') {
-                        errorMessage = 'Password salah';
-                    } else if (error.code === 'auth/too-many-requests') {
-                        errorMessage = 'Terlalu banyak percobaan. Coba lagi nanti.';
-                    } else if (error.code === 'auth/network-request-failed') {
-                        errorMessage = 'Koneksi internet bermasalah';
-                    }
-                    
-                    loginStatus.innerHTML = `<div class="error">${errorMessage}</div>`;
-                    loginStatus.className = 'error';
-                }
-            });
+        function showStatus(message, type) {
+            loginStatus.innerHTML = message;
+            loginStatus.className = type;
+            if (type === 'info') {
+                loginStatus.style.background = 'rgba(100,100,200,0.1)';
+                loginStatus.style.color = '#8B6F7A';
+            } else {
+                loginStatus.style.background = '';
+                loginStatus.style.color = '';
+            }
         }
 
-        // Network status
-        window.addEventListener('offline', function() {
-            const statusDiv = document.createElement('div');
-            statusDiv.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: #FF9500;
-                color: white;
-                text-align: center;
-                padding: 10px;
-                z-index: 10000;
-                font-size: 14px;
-            `;
-            statusDiv.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline';
-            document.body.prepend(statusDiv);
-            
-            setTimeout(() => {
-                if (statusDiv.parentNode) {
-                    statusDiv.parentNode.removeChild(statusDiv);
-                }
-            }, 5000);
+        // Deteksi offline
+        window.addEventListener('offline', () => {
+            showStatus('Mode offline: Periksa koneksi internet', 'error');
         });
     </script>
 </body>
