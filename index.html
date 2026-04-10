@@ -2,9 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#F4ACB7" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#2D2A3A" media="(prefers-color-scheme: dark)">
+    <!-- Meta viewport untuk mobile responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuizApp - Belajar Interaktif</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,7 +28,7 @@
             <!-- Welcome Card -->
             <div class="card fade-in">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #F4ACB7, #E5989B); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
                         <i class="fas fa-brain"></i>
                     </div>
                     <div>
@@ -39,18 +38,18 @@
                 </div>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0;">
-                    <div style="background: rgba(244,172,183,0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(244,172,183,0.2);">
-                        <i class="fas fa-book" style="color: #F4ACB7; font-size: 20px; margin-bottom: 8px;"></i>
+                    <div style="background: rgba(37, 211, 102, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(37, 211, 102, 0.2);">
+                        <i class="fas fa-book" style="color: #25D366; font-size: 20px; margin-bottom: 8px;"></i>
                         <h4 style="margin-bottom: 4px;">Mata Kuliah Lengkap</h4>
                         <p class="muted" style="font-size: 13px;">Akses berbagai materi pembelajaran</p>
                     </div>
-                    <div style="background: rgba(205,180,219,0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(205,180,219,0.2);">
-                        <i class="fas fa-question-circle" style="color: #CDB4DB; font-size: 20px; margin-bottom: 8px;"></i>
+                    <div style="background: rgba(52, 183, 241, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(52, 183, 241, 0.2);">
+                        <i class="fas fa-question-circle" style="color: #34B7F1; font-size: 20px; margin-bottom: 8px;"></i>
                         <h4 style="margin-bottom: 4px;">Quiz Interaktif</h4>
                         <p class="muted" style="font-size: 13px;">Uji pengetahuan dengan soal menarik</p>
                     </div>
-                    <div style="background: rgba(229,152,155,0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(229,152,155,0.2);">
-                        <i class="fas fa-chart-line" style="color: #E5989B; font-size: 20px; margin-bottom: 8px;"></i>
+                    <div style="background: rgba(7, 94, 84, 0.1); padding: 16px; border-radius: 12px; border: 1px solid rgba(7, 94, 84, 0.2);">
+                        <i class="fas fa-chart-line" style="color: #075E54; font-size: 20px; margin-bottom: 8px;"></i>
                         <h4 style="margin-bottom: 4px;">Hasil Real-time</h4>
                         <p class="muted" style="font-size: 13px;">Pantau perkembangan belajar Anda</p>
                     </div>
@@ -67,6 +66,7 @@
                 </div>
                 
                 <div id="mataKuliahList" class="list">
+                    <!-- Mata kuliah akan di-load dari Firebase -->
                     <div class="loading-placeholder">
                         <div class="spinner"></div>
                         <p style="text-align: center; margin-top: 16px; color: var(--text-muted);">Memuat mata kuliah...</p>
@@ -78,7 +78,7 @@
         <!-- Footer -->
         <footer class="footer">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <small>© 2025 QuizApp • Platform Belajar Interaktif</small>
+                <small>© 2025 QuizAppFaizul • Platform Belajar Interaktif</small>
                 <div class="muted" style="display: flex; gap: 16px; align-items: center;">
                     <span id="totalCourses">0 Mata Kuliah</span>
                     <span>•</span>
@@ -93,18 +93,64 @@
         </button>
     </div>
 
-    <!-- JavaScript (Module) dengan Firebase quiz-warohmah -->
+    <!-- JavaScript -->
+    <script>
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('quiz-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('quiz-theme', newTheme);
+            
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.innerHTML = newTheme === 'dark' 
+                ? '<i class="fas fa-sun"></i>' 
+                : '<i class="fas fa-moon"></i>';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                location.reload();
+            });
+            
+            // Make functions globally available
+            window.toggleTheme = toggleTheme;
+        });
+        
+        // Make sure touch events work properly on mobile
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+
+    <!-- Firebase App -->
     <script type="module">
-        // Konfigurasi Firebase BARU (quiz-warohmah)
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
-            authDomain: "quiz-warohmah.firebaseapp.com",
-            projectId: "quiz-warohmah",
-            storageBucket: "quiz-warohmah.firebasestorage.app",
-            messagingSenderId: "271883195532",
-            appId: "1:271883195532:web:723ea686eb8cba402397a9"
+            apiKey: "AIzaSyDdTjMnaetKZ9g0Xsh9sR3H0Otm_nFyy8o",
+            authDomain: "quizappfaizul.firebaseapp.com",
+            projectId: "quizappfaizul",
+            storageBucket: "quizappfaizul.firebasestorage.app",
+            messagingSenderId: "177544522930",
+            appId: "1:177544522930:web:354794b407cf29d86cedab"
         };
 
+        // Import Firebase (gunakan CDN versi 9 yang compatible)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { 
             getFirestore, 
@@ -118,35 +164,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Theme Management (sinkron dengan style.css)
-        function initTheme() {
-            const savedTheme = localStorage.getItem('quiz-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const themeToggle = document.getElementById('themeToggle');
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('quiz-theme', newTheme);
-            const themeToggle = document.getElementById('themeToggle');
-            themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        }
-
-        // Load Mata Kuliah dari Firebase baru
+        // Load Mata Kuliah
         async function loadMataKuliah() {
             const mataKuliahList = document.getElementById('mataKuliahList');
-            const totalCoursesSpan = document.getElementById('totalCourses');
-            const totalQuestionsSpan = document.getElementById('totalQuestions');
+            const totalCourses = document.getElementById('totalCourses');
+            const totalQuestions = document.getElementById('totalQuestions');
             
             try {
                 mataKuliahList.innerHTML = `
@@ -156,6 +178,7 @@
                     </div>
                 `;
                 
+                // Get mata kuliah
                 const q = query(collection(db, "mata_kuliah"), orderBy("nama", "asc"));
                 const snapshot = await getDocs(q);
                 const mataKuliah = snapshot.docs.map(doc => ({
@@ -166,43 +189,51 @@
                 if (mataKuliah.length === 0) {
                     mataKuliahList.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-state-icon"><i class="fas fa-book"></i></div>
-                            <h3>Belum ada mata kuliah</h3>
-                            <p>Silakan hubungi admin untuk menambahkan mata kuliah</p>
-                            <a href="admin.html" class="btn primary"><i class="fas fa-user-shield"></i> Login Admin</a>
+                            <div class="empty-state-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 style="margin-bottom: 8px;">Belum ada mata kuliah</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 20px;">Silakan hubungi admin untuk menambahkan mata kuliah</p>
+                            <a href="admin.html" class="btn primary">
+                                <i class="fas fa-user-shield"></i> Login Admin
+                            </a>
                         </div>
                     `;
-                    totalCoursesSpan.textContent = "0 Mata Kuliah";
-                    totalQuestionsSpan.textContent = "0 Soal";
+                    totalCourses.textContent = "0 Mata Kuliah";
+                    totalQuestions.textContent = "0 Soal";
                     return;
                 }
                 
-                // Hitung total soal dari semua courses
+                // Calculate total questions
                 let totalSoal = 0;
                 for (const mk of mataKuliah) {
                     try {
-                        const coursesSnap = await getDocs(collection(db, "mata_kuliah", mk.id, "courses"));
-                        coursesSnap.forEach(doc => {
-                            totalSoal += doc.data().totalSoal || 0;
-                        });
-                    } catch (err) {
-                        console.warn(`Gagal ambil courses untuk ${mk.nama}:`, err);
+                        const coursesSnapshot = await getDocs(collection(db, "mata_kuliah", mk.id, "courses"));
+                        for (const courseDoc of coursesSnapshot.docs) {
+                            totalSoal += courseDoc.data().totalSoal || 0;
+                        }
+                    } catch (error) {
+                        console.log(`Error getting courses for ${mk.nama}:`, error);
                     }
                 }
                 
-                totalCoursesSpan.textContent = `${mataKuliah.length} Mata Kuliah`;
-                totalQuestionsSpan.textContent = `${totalSoal} Soal`;
+                // Update counters
+                totalCourses.textContent = `${mataKuliah.length} Mata Kuliah`;
+                totalQuestions.textContent = `${totalSoal} Soal`;
                 
+                // Render mata kuliah
                 mataKuliahList.innerHTML = mataKuliah.map(mk => `
                     <div class="course-item slide-in">
                         <div class="left">
                             <div class="course-badge">${mk.nama?.charAt(0) || 'M'}</div>
                             <div>
-                                <h3>${mk.nama || 'Tanpa Nama'}</h3>
+                                <h3 style="margin-bottom: 4px;">${mk.nama || 'Tanpa Nama'}</h3>
                                 <p class="muted">${mk.description || 'Tidak ada deskripsi'}</p>
                                 <div style="display: flex; gap: 12px; margin-top: 8px; align-items: center;">
                                     <span class="badge">${mk.totalCourses || 0} Course</span>
-                                    <span class="muted"><i class="fas fa-clock"></i> ${Math.ceil((mk.totalCourses || 0) * 15)} menit</span>
+                                    <span class="muted" style="font-size: 13px;">
+                                        <i class="fas fa-clock"></i> ${Math.ceil((mk.totalCourses || 0) * 15)} menit
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -216,27 +247,26 @@
                 console.error("Error loading data:", error);
                 mataKuliahList.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                        <h3>Gagal Memuat Data</h3>
-                        <p>${error.message}</p>
-                        <button onclick="location.reload()" class="btn secondary"><i class="fas fa-redo"></i> Coba Lagi</button>
+                        <div class="empty-state-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3 style="margin-bottom: 8px; color: #ff3b30;">Gagal Memuat Data</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 16px;">${error.message}</p>
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="location.reload()" class="btn secondary">
+                                <i class="fas fa-redo"></i> Coba Lagi
+                            </button>
+                            <a href="admin.html" class="btn primary">
+                                <i class="fas fa-user-shield"></i> Cek Admin
+                            </a>
+                        </div>
                     </div>
                 `;
             }
         }
-
-        // Event listeners
-        document.getElementById('refreshBtn')?.addEventListener('click', () => location.reload());
-        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
         
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            loadMataKuliah();
-        });
-        
-        // Global for toggle if needed
-        window.toggleTheme = toggleTheme;
+        // Load data when page is ready
+        document.addEventListener('DOMContentLoaded', loadMataKuliah);
     </script>
 </body>
 </html>
