@@ -1,5 +1,5 @@
-// user.js - Untuk website 2 (quiz-warohmah)
-// Tidak ada sisa konfigurasi dari website 1
+// user.js - Revisi Final untuk Firebase quiz-warohmah
+// Tidak ada sisa dari website lama
 
 const firebaseConfig = {
   apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
@@ -17,6 +17,7 @@ import {
   collection, 
   getDocs,
   query,
+  orderBy,
   addDoc,
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
@@ -56,13 +57,17 @@ const themeToggle = document.getElementById('themeToggle');
 
 // ========== FUNGSI NATURAL SORT ==========
 function naturalSort(a, b) {
+  // Guard jika nama tidak ada
+  const nameA = a.nama || '';
+  const nameB = b.nama || '';
+  
   const extractNumbers = (str) => {
     const matches = str.match(/\d+/g);
     return matches ? matches.map(Number) : [];
   };
 
-  const aNumbers = extractNumbers(a.nama || '');
-  const bNumbers = extractNumbers(b.nama || '');
+  const aNumbers = extractNumbers(nameA);
+  const bNumbers = extractNumbers(nameB);
   
   if (aNumbers.length > 0 && bNumbers.length > 0) {
     if (aNumbers[0] !== bNumbers[0]) {
@@ -70,10 +75,7 @@ function naturalSort(a, b) {
     }
   }
   
-  return (a.nama || '').localeCompare(b.nama || '', undefined, { 
-    numeric: true, 
-    sensitivity: 'base' 
-  });
+  return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
 }
 
 // ========== FUNGSI PENGACAKAN ==========
@@ -105,7 +107,6 @@ function prepareRandomizedQuiz(questions) {
     shuffledOptions.forEach(([originalKey, value], idx) => {
       const newKey = String.fromCharCode(65 + idx);
       newOptions[newKey] = value;
-      
       if (originalKey === correctAnswer) {
         newCorrectAnswer = newKey;
       }
@@ -114,9 +115,7 @@ function prepareRandomizedQuiz(questions) {
     if (!newCorrectAnswer && correctAnswer && options[correctAnswer]) {
       const correctText = options[correctAnswer];
       Object.entries(newOptions).forEach(([key, value]) => {
-        if (value === correctText) {
-          newCorrectAnswer = key;
-        }
+        if (value === correctText) newCorrectAnswer = key;
       });
     }
     
@@ -134,40 +133,28 @@ async function loadCourses() {
   if (!mataKuliahId) {
     coursesList.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">
-          <i class="fas fa-exclamation-circle"></i>
-        </div>
-        <h3 style="margin-bottom: 8px;">Mata Kuliah Tidak Ditemukan</h3>
-        <p style="color: var(--text-muted); margin-bottom: 20px;">Silakan pilih mata kuliah dari halaman utama</p>
-        <a href="index.html" class="btn primary">
-          <i class="fas fa-home"></i> Kembali ke Home
-        </a>
+        <div class="empty-state-icon"><i class="fas fa-exclamation-circle"></i></div>
+        <h3>Mata Kuliah Tidak Ditemukan</h3>
+        <p>Silakan pilih mata kuliah dari halaman utama</p>
+        <a href="index.html" class="btn primary"><i class="fas fa-home"></i> Kembali ke Home</a>
       </div>
     `;
     return;
   }
   
   try {
-    // Hapus orderBy karena kita akan sorting manual dengan naturalSort
-    const coursesSnapshot = await getDocs(collection(db, "mata_kuliah", mataKuliahId, "courses"));
-    let courses = coursesSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const coursesSnapshot = await getDocs(query(collection(db, "mata_kuliah", mataKuliahId, "courses"), orderBy("nama", "asc")));
+    let courses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
     courses.sort(naturalSort);
     
     if (courses.length === 0) {
       coursesList.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">
-            <i class="fas fa-folder-open"></i>
-          </div>
-          <h3 style="margin-bottom: 8px;">Belum ada Course</h3>
-          <p style="color: var(--text-muted); margin-bottom: 20px;">Tidak ada course yang tersedia di mata kuliah ini</p>
-          <a href="index.html" class="btn primary">
-            <i class="fas fa-arrow-left"></i> Pilih Mata Kuliah Lain
-          </a>
+          <div class="empty-state-icon"><i class="fas fa-folder-open"></i></div>
+          <h3>Belum ada Course</h3>
+          <p>Tidak ada course yang tersedia di mata kuliah ini</p>
+          <a href="index.html" class="btn primary"><i class="fas fa-arrow-left"></i> Pilih Mata Kuliah Lain</a>
         </div>
       `;
       return;
@@ -178,18 +165,16 @@ async function loadCourses() {
         <div class="left">
           <div class="course-badge">${course.nama?.charAt(0) || 'C'}</div>
           <div>
-            <h3 style="margin-bottom: 4px;">${course.nama || 'Tanpa Nama'}</h3>
+            <h3>${course.nama || 'Tanpa Nama'}</h3>
             <p class="muted">${course.description || 'Tidak ada deskripsi'}</p>
             <div style="display: flex; gap: 12px; margin-top: 8px;">
               <span class="badge">${course.totalSoal || 0} Soal</span>
               <span class="muted">•</span>
-              <span class="muted" style="font-size: 13px;">
-                <i class="fas fa-clock"></i> ${Math.ceil((course.totalSoal || 0) * 1.5)} menit
-              </span>
+              <span class="muted"><i class="fas fa-clock"></i> ${Math.ceil((course.totalSoal || 0) * 1.5)} menit</span>
             </div>
           </div>
         </div>
-        <button class="btn primary" onclick="startQuiz('${course.id}', '${course.nama || 'Course'}')">
+        <button class="btn primary" onclick="startQuiz('${course.id}', '${(course.nama || 'Course').replace(/'/g, "\\'")}')">
           <i class="fas fa-play"></i> Mulai Quiz
         </button>
       </div>
@@ -199,25 +184,15 @@ async function loadCourses() {
     console.error("Error loading courses:", error);
     coursesList.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <h3 style="margin-bottom: 8px; color: #ff3b30;">Gagal Memuat Course</h3>
-        <p style="color: var(--text-muted); margin-bottom: 16px;">${error.message}</p>
-        <div style="display: flex; gap: 8px; justify-content: center;">
-          <button onclick="location.reload()" class="btn secondary">
-            <i class="fas fa-redo"></i> Coba Lagi
-          </button>
-          <a href="index.html" class="btn primary">
-            <i class="fas fa-home"></i> Kembali
-          </a>
-        </div>
+        <div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3>Gagal Memuat Course</h3>
+        <p>${error.message}</p>
+        <button onclick="location.reload()" class="btn secondary"><i class="fas fa-redo"></i> Coba Lagi</button>
       </div>
     `;
   }
 }
 
-// Start Quiz
 window.startQuiz = async function(courseId, courseName) {
   currentCourse = { id: courseId, name: courseName };
   
@@ -228,7 +203,7 @@ window.startQuiz = async function(courseId, courseName) {
   backBtn.style.display = 'inline-flex';
   
   try {
-    const questionsSnapshot = await getDocs(collection(db, "mata_kuliah", mataKuliahId, "courses", courseId, "soal"));
+    const questionsSnapshot = await getDocs(query(collection(db, "mata_kuliah", mataKuliahId, "courses", courseId, "soal")));
     originalQuestions = questionsSnapshot.docs.map(doc => ({
       id: doc.id,
       pertanyaan: doc.data().pertanyaan || doc.data().question,
@@ -240,21 +215,15 @@ window.startQuiz = async function(courseId, courseName) {
     if (originalQuestions.length === 0) {
       quizContainer.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">
-            <i class="fas fa-question-circle"></i>
-          </div>
-          <h3 style="margin-bottom: 8px;">Belum ada Soal</h3>
-          <p style="color: var(--text-muted); margin-bottom: 20px;">Tidak ada soal yang tersedia di course ini</p>
-          <button onclick="showCourses()" class="btn primary">
-            <i class="fas fa-arrow-left"></i> Kembali ke Course
-          </button>
+          <div class="empty-state-icon"><i class="fas fa-question-circle"></i></div>
+          <h3>Belum ada Soal</h3>
+          <button onclick="showCourses()" class="btn primary"><i class="fas fa-arrow-left"></i> Kembali ke Course</button>
         </div>
       `;
       return;
     }
     
     randomizedQuestions = prepareRandomizedQuiz(originalQuestions);
-    
     currentQuestionIndex = 0;
     userAnswers = {};
     timer = 0;
@@ -273,14 +242,9 @@ window.startQuiz = async function(courseId, courseName) {
     console.error("Error loading questions:", error);
     quizContainer.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <h3 style="margin-bottom: 8px; color: #ff3b30;">Gagal Memuat Soal</h3>
-        <p style="color: var(--text-muted); margin-bottom: 16px;">${error.message}</p>
-        <button onclick="showCourses()" class="btn primary">
-          <i class="fas fa-arrow-left"></i> Kembali
-        </button>
+        <div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3>Gagal Memuat Soal</h3>
+        <button onclick="showCourses()" class="btn primary"><i class="fas fa-arrow-left"></i> Kembali</button>
       </div>
     `;
   }
@@ -293,19 +257,14 @@ function renderQuestion() {
   quizProgress.textContent = `Soal ${currentQuestionIndex + 1}/${randomizedQuestions.length}`;
   
   quizContainer.innerHTML = `
-    <div class="q-text">
-      <b>${currentQuestionIndex + 1}.</b> ${question.pertanyaan || question.question || 'Pertanyaan tidak tersedia'}
-    </div>
+    <div class="q-text"><b>${currentQuestionIndex + 1}.</b> ${question.pertanyaan || question.question || 'Pertanyaan tidak tersedia'}</div>
     <div class="choices">
       ${['A', 'B', 'C', 'D'].map(key => {
-        const optionText = (question.pilihan || question.options || {})[key] || '';
+        const optionText = (question.pilihan || {})[key] || '';
         const isSelected = userAnswers[currentQuestionIndex] === key;
-        
-        if (!optionText || optionText.trim() === '') return '';
-        
+        if (!optionText.trim()) return '';
         return `
-          <div class="choice ${isSelected ? 'selected' : ''}" 
-               onclick="selectAnswer('${key}')">
+          <div class="choice ${isSelected ? 'selected' : ''}" onclick="selectAnswer('${key}')">
             <span class="label">${key}.</span>
             <span class="text">${optionText}</span>
             ${isSelected ? '<span style="color: #25D366; margin-left: auto;"><i class="fas fa-check"></i></span>' : ''}
@@ -343,29 +302,18 @@ finishBtn.addEventListener('click', finishQuiz);
 quitBtn.addEventListener('click', confirmQuit);
 
 async function finishQuiz() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
+  if (timerInterval) clearInterval(timerInterval);
   
   let score = 0;
   const results = randomizedQuestions.map((q, index) => {
     const userAnswerKey = userAnswers[index];
     const correctAnswerKey = q.jawaban;
     const isCorrect = userAnswerKey === correctAnswerKey;
-    
     if (isCorrect) score++;
     
-    const userAnswerText = userAnswerKey 
-      ? `${userAnswerKey}. ${q.pilihan[userAnswerKey] || 'Tidak ada teks jawaban'}` 
-      : 'Tidak dijawab';
-    
-    const correctAnswerText = `${correctAnswerKey}. ${q.pilihan[correctAnswerKey] || 'Tidak ada teks jawaban'}`;
-    
-    const allOptions = [];
-    for (const [key, value] of Object.entries(q.pilihan || {})) {
-      allOptions.push(`${key}. ${value}`);
-    }
+    const userAnswerText = userAnswerKey ? `${userAnswerKey}. ${q.pilihan[userAnswerKey] || ''}` : 'Tidak dijawab';
+    const correctAnswerText = `${correctAnswerKey}. ${q.pilihan[correctAnswerKey] || ''}`;
+    const allOptions = Object.entries(q.pilihan || {}).map(([k,v]) => `${k}. ${v}`).join(' | ');
     
     return {
       question: q.pertanyaan || q.question,
@@ -376,7 +324,7 @@ async function finishQuiz() {
       correctAnswerText,
       isCorrect,
       explanation: q.explanation,
-      allOptions: allOptions.join(' | ')
+      allOptions
     };
   });
   
@@ -393,6 +341,7 @@ async function finishQuiz() {
   
   localStorage.setItem('quizResult', JSON.stringify(result));
   
+  // Simpan ke Firebase (opsional, tidak mengganggu)
   try {
     await addDoc(collection(db, "quiz_results"), {
       courseId: currentCourse.id,
@@ -410,11 +359,7 @@ async function finishQuiz() {
 }
 
 window.showCourses = function() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-  
+  if (timerInterval) clearInterval(timerInterval);
   quizSection.style.display = 'none';
   coursesSection.style.display = 'block';
   pageTitle.textContent = 'Quiz';
@@ -428,13 +373,12 @@ function confirmQuit() {
   const cancelBtn = document.getElementById('confirmCancel');
   const okBtn = document.getElementById('confirmOk');
   
+  if (!modal) return;
+  
   message.textContent = 'Apakah Anda yakin ingin keluar dari quiz? Semua jawaban akan hilang.';
   modal.style.display = 'flex';
   
-  cancelBtn.onclick = () => {
-    modal.style.display = 'none';
-  };
-  
+  cancelBtn.onclick = () => modal.style.display = 'none';
   okBtn.onclick = () => {
     modal.style.display = 'none';
     showCourses();
@@ -444,7 +388,6 @@ function confirmQuit() {
 function initTheme() {
   const savedTheme = localStorage.getItem('quiz-theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.documentElement.setAttribute('data-theme', 'dark');
     themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -457,7 +400,6 @@ function initTheme() {
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  
   document.documentElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('quiz-theme', newTheme);
   updateThemeIcon();
@@ -465,9 +407,7 @@ function toggleTheme() {
 
 function updateThemeIcon() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
-  themeToggle.innerHTML = currentTheme === 'dark' 
-    ? '<i class="fas fa-sun"></i>' 
-    : '<i class="fas fa-moon"></i>';
+  themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 }
 
 backBtn.addEventListener('click', showCourses);
