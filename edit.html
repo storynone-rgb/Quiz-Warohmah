@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!-- PWA & Mobile Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#D81B60" media="(prefers-color-scheme: light)">
@@ -9,84 +8,37 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="QuizApp">
-    <meta name="application-name" content="QuizApp">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-TileColor" content="#D81B60">
-    <meta name="msapplication-tap-highlight" content="no">
-    
-    <!-- Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/lock--v1.png">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/lock--v1.png">
-    
     <title>QuizApp - Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        /* Mobile optimizations for admin dashboard */
         .mobile-only { display: none; }
         .desktop-only { display: block; }
-        
         @media (max-width: 768px) {
             .desktop-only { display: none !important; }
             .mobile-only { display: block !important; }
             .admin-container { flex-direction: column !important; }
             .left-panel { width: 100% !important; min-width: 100% !important; margin-bottom: 16px; }
-            .right-panel { min-height: auto !important; }
-            .content-header { flex-direction: column !important; gap: 16px !important; align-items: flex-start !important; }
-            .data-table-container { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
-            .data-table { min-width: 600px !important; }
-            .menu-btn { padding: 14px 16px !important; font-size: 15px !important; }
-            .modal-content { margin: 10px !important; max-height: 80vh !important; overflow-y: auto !important; }
-            .form-row { grid-template-columns: 1fr !important; gap: 12px !important; }
         }
-        
-        @media (max-width: 480px) {
-            .topbar { padding: 8px 12px !important; }
-            .topbar h1 { font-size: 16px !important; }
-            .btn { padding: 10px 14px !important; font-size: 13px !important; }
-            .modal-body { padding: 16px !important; }
-            .form-actions { flex-direction: column !important; gap: 8px !important; }
-            .form-actions .btn { width: 100% !important; }
-        }
-        
-        /* Splash screen */
         #splash-screen {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed; top:0;left:0;right:0;bottom:0;
             background: linear-gradient(145deg, #F8BBD0, #F06292);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.5s;
         }
         #splash-screen.hidden { opacity: 0; pointer-events: none; }
         .splash-logo {
-            width: 90px; height: 90px;
-            background: white;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 90px; height: 90px; background: white; border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; animation: pulse 2s infinite; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .splash-logo i { font-size: 44px; color: #EC407A; }
-        .splash-text {
-            color: white;
-            font-size: 20px;
-            font-weight: 600;
-            margin-top: 20px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+        .splash-text { color: white; font-size: 20px; font-weight: 600; margin-top: 20px; text-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.9; }
+            0%,100%{transform:scale(1);opacity:1;}
+            50%{transform:scale(1.08);opacity:0.9;}
         }
     </style>
 </head>
@@ -95,16 +47,15 @@
         <div class="splash-logo"><i class="fas fa-cogs"></i></div>
         <div class="splash-text">Admin Dashboard</div>
     </div>
-
     <div class="app">
         <header class="topbar">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 40px; height: 40px; background: linear-gradient(145deg, #F48FB1, #D81B60); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(216,27,96,0.3);">
-                    <i class="fas fa-cogs" style="color: white; font-size: 20px;"></i>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:40px;height:40px;background:linear-gradient(145deg,#F48FB1,#D81B60);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(216,27,96,0.3);">
+                    <i class="fas fa-cogs" style="color:white;font-size:20px;"></i>
                 </div>
                 <div>
                     <h1>Admin Dashboard</h1>
-                    <p class="muted" style="font-size: 12px; margin-top: 2px;" id="userInfo">Loading...</p>
+                    <p class="muted" style="font-size:12px;" id="userInfo">Loading...</p>
                 </div>
             </div>
             <div class="top-actions">
@@ -116,18 +67,17 @@
                 <a href="index.html" class="btn primary desktop-only"><i class="fas fa-eye"></i> View Site</a>
             </div>
         </header>
-
         <main class="container">
             <div class="admin-container">
                 <aside class="left-panel card">
                     <h3><i class="fas fa-bars"></i> Menu</h3>
-                    <div class="menu" style="margin: 20px 0;">
+                    <div class="menu" style="margin:20px 0;">
                         <button class="menu-btn active" data-view="mata-kuliah"><i class="fas fa-book"></i> Mata Kuliah</button>
                         <button class="menu-btn" data-view="courses"><i class="fas fa-folder"></i> Courses</button>
                         <button class="menu-btn" data-view="soal"><i class="fas fa-question-circle"></i> Soal</button>
                         <button class="menu-btn" data-view="stats"><i class="fas fa-chart-bar"></i> Statistik</button>
                     </div>
-                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <div style="margin-top:30px;padding-top:20px;border-top:1px solid var(--border-color);">
                         <h4><i class="fas fa-info-circle"></i> Info</h4>
                         <div class="stats">
                             <div class="stat-item"><span class="stat-label">Mata Kuliah</span><span class="stat-value" id="totalMataKuliah">0</span></div>
@@ -136,35 +86,28 @@
                         </div>
                     </div>
                 </aside>
-
                 <section class="right-panel card">
                     <div class="content-header">
                         <div>
                             <h2 id="contentTitle">Dashboard Admin</h2>
                             <p class="muted" id="contentSubtitle">Kelola data quiz Anda</p>
                         </div>
-                        <div id="actionButtons" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                        <div id="actionButtons" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
                     </div>
                     <div id="adminContent" class="admin-content">
-                        <div style="text-align: center; padding: 60px 20px;">
-                            <div class="spinner"></div>
-                            <p style="margin-top: 20px; color: var(--text-muted);">Memuat dashboard...</p>
-                        </div>
+                        <div style="text-align:center;padding:60px 20px;"><div class="spinner"></div><p>Memuat dashboard...</p></div>
                     </div>
                 </section>
             </div>
         </main>
-
         <footer class="footer">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
                 <small>© 2026 QuizApp • Admin Dashboard</small>
-                <div class="muted" style="font-size: 12px;"><span id="lastUpdated">Terakhir diupdate: -</span></div>
+                <div class="muted" style="font-size:12px;"><span id="lastUpdated">Terakhir diupdate: -</span></div>
             </div>
         </footer>
-        
         <button id="themeToggle" class="theme-switcher"><i class="fas fa-moon"></i></button>
-        
-        <div id="modal" class="modal" style="display: none;">
+        <div id="modal" class="modal" style="display:none;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modalTitle">Modal Title</h3>
@@ -174,7 +117,6 @@
             </div>
         </div>
     </div>
-
     <script type="module" src="edit.js"></script>
     <script>
         window.addEventListener('load', () => {
@@ -183,20 +125,18 @@
                 setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 500);
             }, 500);
         });
-        
         function updateNetworkStatus() {
             if (!navigator.onLine) {
-                const statusDiv = document.createElement('div');
-                statusDiv.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #FF9500; color: white; text-align: center; padding: 10px; z-index: 10000;';
-                statusDiv.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline - Beberapa fitur admin mungkin terbatas';
-                document.body.prepend(statusDiv);
-                setTimeout(() => { if (statusDiv.parentNode) statusDiv.parentNode.removeChild(statusDiv); }, 5000);
+                const div = document.createElement('div');
+                div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#FF9500;color:#fff;text-align:center;padding:10px;z-index:10000;';
+                div.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline';
+                document.body.prepend(div);
+                setTimeout(() => div.remove(), 5000);
             }
         }
         window.addEventListener('offline', updateNetworkStatus);
         updateNetworkStatus();
     </script>
-    
     <style>
         .admin-container { display: flex; gap: 20px; min-height: 70vh; }
         .left-panel { width: 280px; min-width: 280px; }
@@ -208,28 +148,18 @@
             border-radius: 40px; cursor: pointer; font-size: 15px;
             display: flex; align-items: center; gap: 12px;
             transition: all 0.2s; min-height: 50px; font-weight: 500;
-            border: 1px solid transparent;
         }
-        .menu-btn:hover { background: #FCE4EC; border-color: #F48FB1; }
+        .menu-btn:hover { background: #FCE4EC; }
         .menu-btn.active {
             background: linear-gradient(145deg, #F06292, #D81B60);
             color: white; box-shadow: 0 6px 12px rgba(216,27,96,0.3);
         }
-        .content-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 24px; padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .admin-content { min-height: 500px; }
+        .content-header { display: flex; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
         .stats { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-        .stat-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 16px; background: var(--bg-tertiary); border-radius: 30px;
-        }
-        .stat-label { color: var(--text-secondary); font-size: 14px; }
+        .stat-item { display: flex; justify-content: space-between; padding: 12px 16px; background: var(--bg-tertiary); border-radius: 30px; }
         .stat-value { font-weight: 700; color: #AD1457; }
         .modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed; top:0;left:0;right:0;bottom:0;
             background: rgba(0,0,0,0.3); backdrop-filter: blur(6px);
             display: flex; align-items: center; justify-content: center;
             z-index: 1000; padding: 20px;
@@ -239,15 +169,8 @@
             max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;
             border: 1px solid #F8BBD0; box-shadow: 0 20px 40px rgba(236,64,122,0.2);
         }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 24px 28px; border-bottom: 1px solid #F8BBD0;
-        }
-        .modal-close {
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; font-size: 22px; width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
+        .modal-header { display: flex; justify-content: space-between; padding: 24px 28px; border-bottom: 1px solid #F8BBD0; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; }
         .modal-close:hover { background: #FCE4EC; color: #D81B60; }
         .modal-body { padding: 28px; }
         .form-group { margin-bottom: 20px; }
@@ -260,10 +183,7 @@
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none; border-color: #EC407A; box-shadow: 0 0 0 3px rgba(236,64,122,0.15);
         }
-        .form-actions {
-            display: flex; gap: 12px; justify-content: flex-end;
-            margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);
-        }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         .data-table th, .data-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid #F8BBD0; }
         .data-table th { background: #FCE4EC; font-weight: 700; color: #AD1457; }
@@ -273,12 +193,6 @@
         .btn-danger:hover { background: #D32F2F; }
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
         .empty-state-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.7; color: #F06292; }
-        @media (max-width: 768px) {
-            .admin-container { flex-direction: column; }
-            .left-panel { width: 100%; }
-            .content-header { flex-direction: column; gap: 16px; }
-            .modal-content { margin: 10px; }
-        }
     </style>
 </body>
 </html>
