@@ -5,7 +5,8 @@ const firebaseConfig = {
   projectId: "quiz-warohmah",
   storageBucket: "quiz-warohmah.firebasestorage.app",
   messagingSenderId: "271883195532",
-  appId: "1:271883195532:web:723ea686eb8cba402397a9"
+  appId: "1:271883195532:web:723ea686eb8cba402397a9",
+  measurementId: "G-J39252WX95"
 };
 
 // Import Firebase
@@ -150,4 +151,3 @@ initTheme();
 
 // Export functions for edit.js
 export { auth, db, signOut, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, Timestamp, increment };
-
