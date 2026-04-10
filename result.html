@@ -1,122 +1,40 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!-- Mobile Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#075E54" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0c1317" media="(prefers-color-scheme: dark)">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/whatsapp.png">
-    
+    <meta name="theme-color" content="#F4ACB7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#2D2A3A" media="(prefers-color-scheme: dark)">
     <title>Hasil Quiz - QuizApp</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Splash Screen CSS -->
     <style>
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #075E54;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        
-        #splash-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .splash-logo {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        
-        .splash-logo i {
-            font-size: 40px;
-            color: #25D366;
-        }
-        
-        .splash-text {
-            color: white;
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 20px;
-        }
-        
-        .splash-loader {
-            width: 40px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-        
-        .splash-loader::after {
-            content: '';
-            display: block;
-            width: 40px;
-            height: 100%;
-            background: white;
-            animation: loading 1.5s infinite;
-        }
-        
-        @keyframes loading {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(200%); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-    </style>
-    
-    <!-- Inline Styles -->
-    <style>
+        /* Variabel tema - konsisten dengan style.css feminin */
         :root {
-            --primary-color: #4361ee;
-            --success-color: #4CAF50;
-            --danger-color: #F44336;
-            --user-answer-color: #2196F3;
-            --bg-color: #f5f5f5;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
+            --primary-color: #F4ACB7;
+            --primary-dark: #E5989B;
+            --success-color: #9BC2A5;
+            --danger-color: #E5989B;
+            --user-answer-color: #CDB4DB;
+            --bg-color: #FFF9F7;
+            --card-bg: #FFFFFF;
+            --text-color: #4A3B42;
+            --border-color: #FFE4DE;
         }
 
         [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-color: #ffffff;
-            --border-color: #444444;
+            --bg-color: #2D2A3A;
+            --card-bg: #3A3548;
+            --text-color: #F7E8ED;
+            --border-color: #5B526E;
         }
 
         body {
             background: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            padding: 0;
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
+            padding: 0;
             min-height: 100vh;
         }
 
@@ -124,7 +42,7 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 16px;
-            padding-bottom: 80px; /* Untuk bottom nav */
+            padding-bottom: 80px;
         }
 
         .header {
@@ -132,72 +50,65 @@
             margin-bottom: 20px;
             padding: 20px;
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .header h1 {
             color: var(--primary-color);
             margin-bottom: 8px;
-            font-size: 24px;
+            font-size: 1.6rem;
         }
 
         .score-card {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            background: linear-gradient(135deg, #F4ACB7, #CDB4DB);
             color: white;
             padding: 24px;
-            border-radius: 12px;
+            border-radius: 32px;
             text-align: center;
             margin-bottom: 24px;
-            box-shadow: 0 4px 16px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 8px 20px rgba(244,172,183,0.2);
         }
 
         .score-circle {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.2);
             margin: 0 auto 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border: 4px solid white;
+            border: 3px solid white;
         }
 
         .score-percentage {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
         }
 
         .result-section {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 24px;
             padding: 20px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .section-title {
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 2px solid var(--border-color);
         }
 
-        @media (min-width: 768px) {
-            .section-title {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-
         .section-title h2 {
-            color: var(--primary-color);
-            font-size: 20px;
+            font-size: 1.3rem;
+            color: var(--primary-dark);
         }
 
         .questions-list {
@@ -208,19 +119,19 @@
 
         .question-item {
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 20px;
             background: var(--bg-color);
-            border-left: 4px solid var(--border-color);
+            border-left: 5px solid var(--border-color);
         }
 
         .question-item.correct {
             border-left-color: var(--success-color);
-            background: rgba(76, 175, 80, 0.05);
+            background: rgba(155,194,165,0.1);
         }
 
         .question-item.incorrect {
             border-left-color: var(--danger-color);
-            background: rgba(244, 67, 54, 0.05);
+            background: rgba(229,152,155,0.1);
         }
 
         .question-header {
@@ -228,19 +139,19 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
 
         .question-number {
             font-weight: bold;
-            font-size: 16px;
-            color: var(--primary-color);
+            color: var(--primary-dark);
         }
 
         .question-status {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
         .question-status.correct {
@@ -255,11 +166,10 @@
 
         .question-text {
             margin-bottom: 16px;
-            font-size: 15px;
-            line-height: 1.5;
+            font-size: 0.95rem;
             padding: 12px;
             background: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 16px;
         }
 
         .answer-row {
@@ -267,8 +177,8 @@
             flex-direction: column;
             margin-bottom: 8px;
             padding: 12px;
-            border-radius: 8px;
-            gap: 4px;
+            border-radius: 16px;
+            gap: 6px;
         }
 
         @media (min-width: 480px) {
@@ -279,62 +189,52 @@
         }
 
         .answer-row.user-answer {
-            background: rgba(33, 150, 243, 0.1);
-            border: 2px solid var(--user-answer-color);
+            background: rgba(205,180,219,0.15);
+            border: 1px solid #CDB4DB;
         }
 
         .answer-row.correct-answer {
-            background: rgba(76, 175, 80, 0.1);
-            border: 2px solid var(--success-color);
+            background: rgba(155,194,165,0.15);
+            border: 1px solid #9BC2A5;
         }
 
         .answer-label {
             font-weight: bold;
-            min-width: 140px;
+            min-width: 130px;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
-        }
-
-        .answer-label.user-answer {
-            color: var(--user-answer-color);
-        }
-
-        .answer-label.correct-answer {
-            color: var(--success-color);
+            font-size: 0.85rem;
         }
 
         .answer-text {
-            font-size: 15px;
+            font-size: 0.9rem;
             flex: 1;
         }
 
         .explanation-box {
             padding: 12px;
-            background: rgba(255, 193, 7, 0.1);
-            border-radius: 8px;
+            background: rgba(255,200,162,0.15);
+            border-radius: 16px;
             margin-top: 12px;
-            border-left: 4px solid #FF9800;
+            border-left: 4px solid #FFC8A2;
         }
 
         .explanation-label {
             font-weight: bold;
-            color: #FF9800;
+            color: #FFC8A2;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
         }
 
         .all-options {
             margin-top: 12px;
             padding: 10px;
             background: var(--card-bg);
-            border-radius: 8px;
-            font-size: 13px;
-            color: var(--text-color);
+            border-radius: 16px;
+            font-size: 0.75rem;
             border: 1px dashed var(--border-color);
         }
 
@@ -347,36 +247,27 @@
         }
 
         .btn {
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 0.9rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-decoration: none;
-            min-height: 44px;
-            min-width: 44px;
+            border: none;
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, #F4ACB7, #E5989B);
             color: white;
         }
 
-        .btn-secondary {
-            background: var(--bg-color);
-            color: var(--text-color);
-            border: 2px solid var(--border-color);
-        }
-
-        .btn:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 12px rgba(244,172,183,0.3);
         }
 
         .theme-toggle {
@@ -385,7 +276,7 @@
             right: 20px;
             width: 44px;
             height: 44px;
-            border-radius: 50%;
+            border-radius: 60px;
             background: var(--card-bg);
             display: flex;
             align-items: center;
@@ -394,8 +285,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 100;
             border: none;
-            min-height: 44px;
-            min-width: 44px;
         }
 
         .empty-state {
@@ -403,37 +292,18 @@
             padding: 40px 20px;
         }
 
-        .empty-state i {
-            font-size: 48px;
-            color: #6c757d;
-            margin-bottom: 16px;
-        }
-
-        /* Mobile Bottom Navigation */
         .mobile-bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--bg-secondary);
+            background: var(--card-bg);
             border-top: 1px solid var(--border-color);
             padding: 8px 0;
-            display: none;
+            display: flex;
+            justify-content: space-around;
             z-index: 1000;
-            padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
-        }
-
-        @media (max-width: 768px) {
-            .mobile-bottom-nav {
-                display: flex;
-                justify-content: space-around;
-            }
-            
-            /* Hanya 3 item di bottom nav untuk result page */
-            .mobile-bottom-nav .nav-item {
-                flex: 1;
-                text-align: center;
-            }
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
         }
 
         .nav-item {
@@ -441,145 +311,36 @@
             flex-direction: column;
             align-items: center;
             padding: 8px 12px;
-            color: var(--text-secondary);
+            color: var(--text-secondary, #8B6F7A);
             text-decoration: none;
-            font-size: 12px;
+            font-size: 0.7rem;
         }
 
         .nav-item.active {
-            color: var(--whatsapp-green);
+            color: #F4ACB7;
         }
 
         .nav-item i {
-            font-size: 20px;
+            font-size: 1.2rem;
             margin-bottom: 4px;
         }
 
-        /* Network Status */
-        .network-status {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #FF9500;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            z-index: 10002;
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-        }
-
-        .network-status.online {
-            background: #25D366;
-            transform: translateY(0);
-        }
-
-        .network-status.offline {
-            background: #FF3B30;
-            transform: translateY(0);
-        }
-
-        /* Responsive Adjustments */
         @media (max-width: 480px) {
-            .container {
-                padding: 12px;
-                padding-bottom: 70px;
-            }
-            
-            .score-card {
-                padding: 20px;
-            }
-            
-            .score-circle {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .score-percentage {
-                font-size: 24px;
-            }
-            
-            .header {
-                padding: 16px;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .question-text {
-                font-size: 14px;
-                padding: 10px;
-            }
-            
-            .answer-text {
-                font-size: 14px;
-            }
-            
-            .btn {
-                padding: 10px 16px;
-                font-size: 14px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .answer-label {
-                min-width: 120px;
-                font-size: 13px;
-            }
-            
-            .controls {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-        }
-
-        /* Landscape mode */
-        @media (orientation: landscape) and (max-height: 500px) {
-            .container {
-                padding-bottom: 60px;
-            }
-            
-            .mobile-bottom-nav {
-                display: none;
-            }
-            
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-            }
+            .container { padding: 12px; padding-bottom: 70px; }
+            .score-circle { width: 80px; height: 80px; }
+            .score-percentage { font-size: 22px; }
         }
     </style>
 </head>
 <body>
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-        <div class="splash-logo">
-            <i class="fas fa-chart-bar"></i>
-        </div>
-        <div class="splash-text">Memuat Hasil...</div>
-        <div class="splash-loader"></div>
-    </div>
-
-    <!-- Network Status -->
-    <div class="network-status" id="networkStatus"></div>
-
-    <div class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon"></i>
-    </div>
+    <div class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></div>
 
     <div class="container">
-        <!-- Header -->
-        <div class="header" id="resultHeader">
+        <div class="header">
             <h1>Hasil Quiz</h1>
-            <p class="subtitle" id="courseName">Mata Kuliah: Loading...</p>
+            <p id="courseName">Mata Kuliah: --</p>
         </div>
 
-        <!-- Score Card -->
         <div class="score-card" id="scoreCard">
             <div class="score-circle">
                 <div class="score-percentage" id="scorePercentage">0%</div>
@@ -588,348 +349,141 @@
             <p id="scoreTime">Waktu pengerjaan: 00:00</p>
         </div>
 
-        <!-- Results Section -->
         <div class="result-section">
             <div class="section-title">
                 <h2>Detail Jawaban</h2>
-                <div>
-                    <span id="correctCount">0</span> benar dari 
-                    <span id="totalQuestions">0</span> soal
-                </div>
+                <div><span id="correctCount">0</span> benar dari <span id="totalQuestions">0</span> soal</div>
             </div>
-
-            <div class="questions-list" id="questionsList">
-                <!-- Daftar soal akan diisi oleh JavaScript -->
-            </div>
+            <div class="questions-list" id="questionsList"></div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls" id="controlsContainer">
-            <!-- Tombol akan diisi oleh JavaScript -->
-        </div>
+        <div class="controls" id="controlsContainer"></div>
     </div>
 
-    <!-- Mobile Bottom Navigation (MODIFIED - Hanya 3 item) -->
     <nav class="mobile-bottom-nav">
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="result.html" class="nav-item active">
-            <i class="fas fa-chart-bar"></i>
-            <span>Hasil</span>
-        </a>
-        <a href="admin.html" class="nav-item">
-            <i class="fas fa-cog"></i>
-            <span>Admin</span>
-        </a>
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="result.html" class="nav-item active"><i class="fas fa-chart-bar"></i><span>Hasil</span></a>
+        <a href="admin.html" class="nav-item"><i class="fas fa-cog"></i><span>Admin</span></a>
     </nav>
 
     <script>
-        // Hide splash screen
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const splashScreen = document.getElementById('splash-screen');
-                if (splashScreen) {
-                    splashScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        splashScreen.style.display = 'none';
-                    }, 500);
-                }
-            }, 800);
-        });
-
-        // Network status
-        function updateNetworkStatus() {
-            const statusElement = document.getElementById('networkStatus');
-            if (!statusElement) return;
-            
-            if (navigator.onLine) {
-                statusElement.textContent = 'Anda online';
-                statusElement.className = 'network-status online';
-                setTimeout(() => {
-                    statusElement.style.transform = 'translateY(-100%)';
-                }, 3000);
-            } else {
-                statusElement.textContent = 'Anda offline - Beberapa fitur terbatas';
-                statusElement.className = 'network-status offline';
-            }
-        }
-
-        window.addEventListener('online', updateNetworkStatus);
-        window.addEventListener('offline', updateNetworkStatus);
-        updateNetworkStatus();
-
-        // JavaScript untuk result.html - VERSI SEDERHANA
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== RESULT PAGE LOADED ===');
-            loadResult();
-            initTheme();
-            
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                themeToggle.addEventListener('click', toggleTheme);
-            }
-            
-            // Atur ulang bottom navigation untuk result page
-            setupBottomNavigation();
-        });
-
-        function setupBottomNavigation() {
-            // Untuk result page, kita hapus tombol Quiz dari bottom nav
-            // Sudah dihandle di HTML dengan hanya 3 item
-            console.log('Bottom navigation setup for result page');
-        }
-
-        function loadResult() {
-            try {
-                const resultData = JSON.parse(localStorage.getItem('quizResult'));
-                
+        (function() {
+            // Load dan tampilkan hasil dari localStorage
+            function loadResult() {
+                const resultData = localStorage.getItem('quizResult');
                 if (!resultData) {
                     showNoResult();
                     return;
                 }
-                
-                displayResult(resultData);
-            } catch (error) {
-                console.error('Error loading result:', error);
-                showError();
+                try {
+                    const result = JSON.parse(resultData);
+                    displayResult(result);
+                } catch(e) {
+                    console.error(e);
+                    showError();
+                }
             }
-        }
 
-        function displayResult(result) {
-            // Update UI elements
-            const courseName = document.getElementById('courseName');
-            const scorePercentage = document.getElementById('scorePercentage');
-            const scoreText = document.getElementById('scoreText');
-            const scoreTime = document.getElementById('scoreTime');
-            const correctCount = document.getElementById('correctCount');
-            const totalQuestions = document.getElementById('totalQuestions');
-            
-            if (courseName) {
-                courseName.textContent = result.courseName ? 
-                    `Mata Kuliah: ${result.courseName}` : 
-                    'Mata Kuliah: Tidak tersedia';
-            }
-            
-            if (scorePercentage) scorePercentage.textContent = `${result.percentage || 0}%`;
-            
-            if (scoreText) {
-                scoreText.textContent = `${result.score || 0} dari ${result.totalQuestions || 0} soal benar`;
-            }
-            
-            if (scoreTime) {
-                const minutes = Math.floor((result.timeSpent || 0) / 60).toString().padStart(2, '0');
-                const seconds = ((result.timeSpent || 0) % 60).toString().padStart(2, '0');
-                scoreTime.textContent = `Waktu pengerjaan: ${minutes}:${seconds}`;
-            }
-            
-            if (correctCount) correctCount.textContent = result.score || 0;
-            if (totalQuestions) totalQuestions.textContent = result.totalQuestions || 0;
-            
-            // Display questions if available
-            if (result.results && result.results.length > 0) {
-                displayQuestions(result.results);
-            } else {
+            function displayResult(result) {
+                document.getElementById('courseName').innerHTML = `Mata Kuliah: ${result.courseName || 'Tidak diketahui'}`;
+                document.getElementById('scorePercentage').innerText = `${result.percentage || 0}%`;
+                document.getElementById('scoreText').innerText = `${result.score || 0} dari ${result.totalQuestions || 0} soal benar`;
+                const minutes = Math.floor((result.timeSpent || 0) / 60).toString().padStart(2,'0');
+                const seconds = ((result.timeSpent || 0) % 60).toString().padStart(2,'0');
+                document.getElementById('scoreTime').innerText = `Waktu pengerjaan: ${minutes}:${seconds}`;
+                document.getElementById('correctCount').innerText = result.score || 0;
+                document.getElementById('totalQuestions').innerText = result.totalQuestions || 0;
+
                 const questionsList = document.getElementById('questionsList');
-                if (questionsList) {
-                    questionsList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-info-circle"></i>
-                            <p>Detail jawaban tidak tersedia</p>
+                if (result.results && result.results.length) {
+                    questionsList.innerHTML = result.results.map(item => `
+                        <div class="question-item ${item.isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="question-header">
+                                <div class="question-number">Soal ${item.questionNumber}</div>
+                                <div class="question-status ${item.isCorrect ? 'correct' : 'incorrect'}">${item.isCorrect ? 'Benar' : 'Salah'}</div>
+                            </div>
+                            <div class="question-text">${escapeHtml(item.question)}</div>
+                            <div class="answer-row user-answer">
+                                <div class="answer-label"><i class="fas fa-user"></i> Jawaban Anda:</div>
+                                <div class="answer-text">${escapeHtml(item.userAnswerText || 'Tidak dijawab')}</div>
+                            </div>
+                            <div class="answer-row correct-answer">
+                                <div class="answer-label"><i class="fas fa-check"></i> Jawaban Benar:</div>
+                                <div class="answer-text">${escapeHtml(item.correctAnswerText)}</div>
+                            </div>
+                            ${item.explanation ? `
+                            <div class="explanation-box">
+                                <div class="explanation-label"><i class="fas fa-lightbulb"></i> Penjelasan:</div>
+                                <div class="answer-text">${escapeHtml(item.explanation)}</div>
+                            </div>
+                            ` : ''}
+                            <div class="all-options"><i class="fas fa-list"></i> Semua pilihan: ${escapeHtml(item.allOptions || '')}</div>
                         </div>
-                    `;
+                    `).join('');
+                } else {
+                    questionsList.innerHTML = '<div class="empty-state"><i class="fas fa-info-circle"></i><p>Detail jawaban tidak tersedia</p></div>';
                 }
+
+                // Tombol kembali
+                const controls = document.getElementById('controlsContainer');
+                controls.innerHTML = `<a href="index.html" class="btn btn-primary"><i class="fas fa-home"></i> Kembali ke Halaman Depan</a>`;
             }
-            
-            // TAMPILKAN HANYA SATU TOMBOL: KEMBALI KE HALAMAN DEPAN
-            updateControlButtons(result);
-        }
 
-        function updateControlButtons(result) {
-            const controlsContainer = document.getElementById('controlsContainer');
-            if (!controlsContainer) return;
-            
-            // SELALU TAMPILKAN TOMBOL "KEMBALI KE HALAMAN DEPAN" (index.html)
-            controlsContainer.innerHTML = `
-                <a href="index.html" class="btn btn-primary" style="background: #25D366;">
-                    <i class="fas fa-home"></i> Kembali ke Halaman Depan
-                </a>
-            `;
-        }
-
-        function displayQuestions(results) {
-            const questionsList = document.getElementById('questionsList');
-            
-            if (!questionsList) return;
-            
-            if (!results || results.length === 0) {
-                questionsList.innerHTML = `
+            function showNoResult() {
+                document.querySelector('.container').innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-question-circle"></i>
-                        <h3>Tidak ada data hasil</h3>
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #E5989B;"></i>
+                        <h2>Tidak Ada Hasil Quiz</h2>
+                        <p>Silakan selesaikan quiz terlebih dahulu untuk melihat hasil.</p>
+                        <div style="margin-top: 20px;"><a href="index.html" class="btn btn-primary">Kembali ke Home</a></div>
                     </div>
                 `;
-                return;
+                document.querySelector('.mobile-bottom-nav')?.remove();
             }
-            
-            questionsList.innerHTML = results.map((item, index) => {
-                const statusClass = item.isCorrect ? 'correct' : 'incorrect';
-                const statusText = item.isCorrect ? 'Benar' : 'Salah';
-                
-                return `
-                    <div class="question-item ${statusClass}">
-                        <div class="question-header">
-                            <div class="question-number">Soal ${item.questionNumber}</div>
-                            <div class="question-status ${statusClass}">
-                                ${statusText}
-                            </div>
-                        </div>
-                        
-                        <div class="question-text">
-                            ${item.question}
-                        </div>
-                        
-                        <div class="answer-row user-answer">
-                            <div class="answer-label user-answer">
-                                <i class="fas fa-user"></i>
-                                Jawaban Anda:
-                            </div>
-                            <div class="answer-text">
-                                ${item.userAnswerText || 'Tidak dijawab'}
-                            </div>
-                        </div>
-                        
-                        <div class="answer-row correct-answer">
-                            <div class="answer-label correct-answer">
-                                <i class="fas fa-check"></i>
-                                Jawaban Benar:
-                            </div>
-                            <div class="answer-text">
-                                ${item.correctAnswerText}
-                            </div>
-                        </div>
-                        
-                        ${item.explanation ? `
-                        <div class="explanation-box">
-                            <div class="explanation-label">
-                                <i class="fas fa-lightbulb"></i>
-                                Penjelasan:
-                            </div>
-                            <div class="answer-text">
-                                ${item.explanation}
-                            </div>
-                        </div>
-                        ` : ''}
-                        
-                        <div class="all-options">
-                            <i class="fas fa-list"></i> <strong>Semua pilihan:</strong> ${item.allOptions}
-                        </div>
+
+            function showError() {
+                document.querySelector('.container').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bug" style="font-size: 48px; color: #E5989B;"></i>
+                        <h2>Terjadi Kesalahan</h2>
+                        <p>Gagal memuat hasil quiz.</p>
+                        <button onclick="location.reload()" class="btn btn-primary">Muat Ulang</button>
                     </div>
                 `;
-            }).join('');
-            
-            // Scroll to top after loading
-            setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 100);
-        }
-
-        function showNoResult() {
-            const container = document.querySelector('.container');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff9800;"></i>
-                    <h2 style="margin-bottom: 10px;">Tidak Ada Hasil Quiz</h2>
-                    <p style="color: #6c757d; margin-bottom: 30px;">Silakan selesaikan quiz terlebih dahulu untuk melihat hasil.</p>
-                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <a href="index.html" class="btn btn-primary" style="background: #25D366;">
-                            <i class="fas fa-home"></i> Kembali ke Halaman Depan
-                        </a>
-                        <a href="quiz.html" class="btn btn-secondary">
-                            <i class="fas fa-play"></i> Mulai Quiz
-                        </a>
-                    </div>
-                </div>
-            `;
-            
-            // Hide bottom nav when no result
-            const bottomNav = document.querySelector('.mobile-bottom-nav');
-            if (bottomNav) {
-                bottomNav.style.display = 'none';
             }
-        }
 
-        function showError() {
-            const container = document.querySelector('.container');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-bug" style="font-size: 48px; color: #f44336;"></i>
-                    <h2 style="margin-bottom: 10px;">Terjadi Kesalahan</h2>
-                    <p style="color: #6c757d; margin-bottom: 30px;">
-                        Gagal memuat hasil quiz. Silakan coba lagi atau mulai quiz baru.
-                    </p>
-                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <button onclick="location.reload()" class="btn btn-primary">
-                            <i class="fas fa-redo"></i> Muat Ulang
-                        </button>
-                        <a href="index.html" class="btn btn-secondary" style="background: #25D366;">
-                            <i class="fas fa-home"></i> Kembali ke Halaman Depan
-                        </a>
-                    </div>
-                </div>
-            `;
-            
-            const bottomNav = document.querySelector('.mobile-bottom-nav');
-            if (bottomNav) {
-                bottomNav.style.display = 'none';
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
             }
-        }
 
-        function initTheme() {
-            const savedTheme = localStorage.getItem('quiz-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const themeToggle = document.getElementById('themeToggle');
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                if (themeToggle) {
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                }
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                if (themeToggle) {
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                }
+            // Theme
+            function initTheme() {
+                const saved = localStorage.getItem('quiz-theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = saved === 'dark' || (!saved && prefersDark) ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                const toggle = document.getElementById('themeToggle');
+                if (toggle) toggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             }
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            const themeToggle = document.getElementById('themeToggle');
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('quiz-theme', newTheme);
-            
-            if (themeToggle) {
-                themeToggle.innerHTML = newTheme === 'dark' 
-                    ? '<i class="fas fa-sun"></i>' 
-                    : '<i class="fas fa-moon"></i>';
+            function toggleTheme() {
+                const current = document.documentElement.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('quiz-theme', newTheme);
+                const toggle = document.getElementById('themeToggle');
+                if (toggle) toggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             }
-        }
 
-        // Touch optimization
-        document.addEventListener('touchstart', function() {}, {passive: true});
-        
-        // Prevent pull-to-refresh
-        document.body.addEventListener('touchmove', function(e) {
-            if (e.touches.length > 1) return;
-        }, { passive: false });
+            document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+            initTheme();
+            loadResult();
+        })();
     </script>
 </body>
 </html>
