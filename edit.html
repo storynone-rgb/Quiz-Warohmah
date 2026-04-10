@@ -1,198 +1,652 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <!-- PWA & Mobile Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#D81B60" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#2d1e24" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#075E54" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0c1317" media="(prefers-color-scheme: dark)">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/lock--v1.png">
+    <meta name="apple-mobile-web-app-title" content="QuizApp">
+    <meta name="application-name" content="QuizApp">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-TileColor" content="#075E54">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/whatsapp.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/whatsapp.png">
+    <link rel="apple-touch-startup-image" href="https://img.icons8.com/color/512/whatsapp.png">
+    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>QuizApp - Admin Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mobile-optimized.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
     <style>
-        .mobile-only { display: none; }
-        .desktop-only { display: block; }
+
+       .mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: block;
+}
+        /* Mobile optimizations for admin dashboard */
         @media (max-width: 768px) {
-            .desktop-only { display: none !important; }
-            .mobile-only { display: block !important; }
-            .admin-container { flex-direction: column !important; }
-            .left-panel { width: 100% !important; min-width: 100% !important; margin-bottom: 16px; }
+
+             .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: block !important;
+    }
+            .admin-container {
+                flex-direction: column !important;
+            }
+            
+            .left-panel {
+                width: 100% !important;
+                min-width: 100% !important;
+                margin-bottom: 16px;
+            }
+            
+            .right-panel {
+                min-height: auto !important;
+            }
+            
+            .content-header {
+                flex-direction: column !important;
+                gap: 16px !important;
+                align-items: flex-start !important;
+            }
+            
+            .data-table-container {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            .data-table {
+                min-width: 600px !important;
+            }
+            
+            .menu-btn {
+                padding: 14px 16px !important;
+                font-size: 15px !important;
+            }
+            
+            .modal-content {
+                margin: 10px !important;
+                max-height: 80vh !important;
+                overflow-y: auto !important;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
         }
+        
+        @media (max-width: 480px) {
+        
+            .topbar {
+                padding: 8px 12px !important;
+            }
+            
+            .topbar h1 {
+                font-size: 16px !important;
+            }
+            
+            .btn {
+                padding: 10px 14px !important;
+                font-size: 13px !important;
+            }
+            
+            .modal-body {
+                padding: 16px !important;
+            }
+            
+            .form-actions {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+            
+            .form-actions .btn {
+                width: 100% !important;
+            }
+        }
+        
+        /* Splash screen */
         #splash-screen {
-            position: fixed; top:0;left:0;right:0;bottom:0;
-            background: linear-gradient(145deg, #F8BBD0, #F06292);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.5s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #075E54;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
         }
-        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+        
+        #splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
         .splash-logo {
-            width: 90px; height: 90px; background: white; border-radius: 30px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; animation: pulse 2s infinite; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
         }
-        .splash-logo i { font-size: 44px; color: #EC407A; }
-        .splash-text { color: white; font-size: 20px; font-weight: 600; margin-top: 20px; text-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        
+        .splash-logo i {
+            font-size: 40px;
+            color: #25D366;
+        }
+        
+        .splash-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
         @keyframes pulse {
-            0%,100%{transform:scale(1);opacity:1;}
-            50%{transform:scale(1.08);opacity:0.9;}
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
     </style>
 </head>
 <body data-theme="light">
+    <!-- Splash Screen -->
     <div id="splash-screen">
-        <div class="splash-logo"><i class="fas fa-cogs"></i></div>
+        <div class="splash-logo">
+            <i class="fas fa-cogs"></i>
+        </div>
         <div class="splash-text">Admin Dashboard</div>
     </div>
+
     <div class="app">
+        <!-- Header -->
         <header class="topbar">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div style="width:40px;height:40px;background:linear-gradient(145deg,#F48FB1,#D81B60);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(216,27,96,0.3);">
-                    <i class="fas fa-cogs" style="color:white;font-size:20px;"></i>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-cogs" style="color: white; font-size: 18px;"></i>
                 </div>
                 <div>
                     <h1>Admin Dashboard</h1>
-                    <p class="muted" style="font-size:12px;" id="userInfo">Loading...</p>
+                    <p class="muted" style="font-size: 12px; margin-top: 2px;" id="userInfo">Loading...</p>
                 </div>
             </div>
             <div class="top-actions">
-                <button id="refreshBtn" class="btn secondary mobile-only"><i class="fas fa-redo"></i></button>
-                <button id="refreshBtn" class="btn secondary desktop-only"><i class="fas fa-redo"></i> Refresh</button>
-                <button id="logoutBtn" class="btn secondary mobile-only"><i class="fas fa-sign-out-alt"></i></button>
-                <button id="logoutBtn" class="btn secondary desktop-only"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                <a href="index.html" class="btn primary mobile-only"><i class="fas fa-eye"></i></a>
-                <a href="index.html" class="btn primary desktop-only"><i class="fas fa-eye"></i> View Site</a>
+                <button id="refreshBtn" class="btn secondary mobile-only">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <button id="refreshBtn" class="btn secondary desktop-only">
+                    <i class="fas fa-redo"></i> Refresh
+                </button>
+                <button id="logoutBtn" class="btn secondary mobile-only">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+                <button id="logoutBtn" class="btn secondary desktop-only">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+                <a href="index.html" class="btn primary mobile-only">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="index.html" class="btn primary desktop-only">
+                    <i class="fas fa-eye"></i> View Site
+                </a>
             </div>
         </header>
+
+        <!-- Main Content -->
         <main class="container">
             <div class="admin-container">
+                <!-- Sidebar -->
                 <aside class="left-panel card">
                     <h3><i class="fas fa-bars"></i> Menu</h3>
-                    <div class="menu" style="margin:20px 0;">
-                        <button class="menu-btn active" data-view="mata-kuliah"><i class="fas fa-book"></i> Mata Kuliah</button>
-                        <button class="menu-btn" data-view="courses"><i class="fas fa-folder"></i> Courses</button>
-                        <button class="menu-btn" data-view="soal"><i class="fas fa-question-circle"></i> Soal</button>
-                        <button class="menu-btn" data-view="stats"><i class="fas fa-chart-bar"></i> Statistik</button>
+                    <div class="menu" style="margin: 20px 0;">
+                        <button class="menu-btn active" data-view="mata-kuliah">
+                            <i class="fas fa-book"></i> Mata Kuliah
+                        </button>
+                        <button class="menu-btn" data-view="courses">
+                            <i class="fas fa-folder"></i> Courses
+                        </button>
+                        <button class="menu-btn" data-view="soal">
+                            <i class="fas fa-question-circle"></i> Soal
+                        </button>
+                        <button class="menu-btn" data-view="stats">
+                            <i class="fas fa-chart-bar"></i> Statistik
+                        </button>
                     </div>
-                    <div style="margin-top:30px;padding-top:20px;border-top:1px solid var(--border-color);">
+                    
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
                         <h4><i class="fas fa-info-circle"></i> Info</h4>
                         <div class="stats">
-                            <div class="stat-item"><span class="stat-label">Mata Kuliah</span><span class="stat-value" id="totalMataKuliah">0</span></div>
-                            <div class="stat-item"><span class="stat-label">Courses</span><span class="stat-value" id="totalCourses">0</span></div>
-                            <div class="stat-item"><span class="stat-label">Soal</span><span class="stat-value" id="totalSoal">0</span></div>
+                            <div class="stat-item">
+                                <span class="stat-label">Mata Kuliah</span>
+                                <span class="stat-value" id="totalMataKuliah">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Courses</span>
+                                <span class="stat-value" id="totalCourses">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Soal</span>
+                                <span class="stat-value" id="totalSoal">0</span>
+                            </div>
                         </div>
                     </div>
                 </aside>
+
+                <!-- Main Panel -->
                 <section class="right-panel card">
                     <div class="content-header">
                         <div>
                             <h2 id="contentTitle">Dashboard Admin</h2>
                             <p class="muted" id="contentSubtitle">Kelola data quiz Anda</p>
                         </div>
-                        <div id="actionButtons" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+                        <div id="actionButtons" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <!-- Action buttons will be added dynamically -->
+                        </div>
                     </div>
+                    
                     <div id="adminContent" class="admin-content">
-                        <div style="text-align:center;padding:60px 20px;"><div class="spinner"></div><p>Memuat dashboard...</p></div>
+                        <!-- Content will be loaded here -->
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 20px; color: var(--text-muted);">Memuat dashboard...</p>
+                        </div>
                     </div>
                 </section>
             </div>
         </main>
+
+        <!-- Footer -->
         <footer class="footer">
-            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                <small>© 2026 QuizApp • Admin Dashboard</small>
-                <div class="muted" style="font-size:12px;"><span id="lastUpdated">Terakhir diupdate: -</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <small>© 2025 QuizAppFaizul • Admin Dashboard</small>
+                <div class="muted" style="font-size: 12px;">
+                    <span id="lastUpdated">Terakhir diupdate: -</span>
+                </div>
             </div>
         </footer>
-        <button id="themeToggle" class="theme-switcher"><i class="fas fa-moon"></i></button>
-        <div id="modal" class="modal" style="display:none;">
+        
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="theme-switcher">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <!-- Modal for Forms -->
+        <div id="modal" class="modal" style="display: none;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modalTitle">Modal Title</h3>
-                    <button class="modal-close"><i class="fas fa-times"></i></button>
+                    <button class="modal-close">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="modal-body" id="modalBody"></div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Modal content will be added here -->
+                </div>
             </div>
         </div>
     </div>
+
     <script type="module" src="edit.js"></script>
+    
     <script>
+        // Hide splash screen
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').classList.add('hidden');
-                setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 500);
+                setTimeout(() => {
+                    document.getElementById('splash-screen').style.display = 'none';
+                }, 500);
             }, 500);
         });
+        
+        // Touch optimization for modals
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Network status
         function updateNetworkStatus() {
             if (!navigator.onLine) {
-                const div = document.createElement('div');
-                div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#FF9500;color:#fff;text-align:center;padding:10px;z-index:10000;';
-                div.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline';
-                document.body.prepend(div);
-                setTimeout(() => div.remove(), 5000);
+                const statusDiv = document.createElement('div');
+                statusDiv.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #FF9500; color: white; text-align: center; padding: 10px; z-index: 10000;';
+                statusDiv.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline - Beberapa fitur admin mungkin terbatas';
+                document.body.prepend(statusDiv);
+                
+                setTimeout(() => {
+                    if (statusDiv.parentNode) {
+                        statusDiv.parentNode.removeChild(statusDiv);
+                    }
+                }, 5000);
             }
         }
+        
         window.addEventListener('offline', updateNetworkStatus);
         updateNetworkStatus();
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
+    
     <style>
-        .admin-container { display: flex; gap: 20px; min-height: 70vh; }
-        .left-panel { width: 280px; min-width: 280px; }
-        .right-panel { flex: 1; }
-        .menu { display: flex; flex-direction: column; gap: 8px; }
+        .admin-container {
+            display: flex;
+            gap: 20px;
+            min-height: 70vh;
+        }
+        
+        .left-panel {
+            width: 280px;
+            min-width: 280px;
+        }
+        
+        .right-panel {
+            flex: 1;
+        }
+        
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
         .menu-btn {
-            padding: 14px 18px; text-align: left; border: none;
-            background: var(--bg-tertiary); color: var(--text-primary);
-            border-radius: 40px; cursor: pointer; font-size: 15px;
-            display: flex; align-items: center; gap: 12px;
-            transition: all 0.2s; min-height: 50px; font-weight: 500;
+            padding: 12px 16px;
+            text-align: left;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            min-height: 44px;
         }
-        .menu-btn:hover { background: #FCE4EC; }
+        
+        .menu-btn:hover {
+            background: var(--hover-color);
+        }
+        
         .menu-btn.active {
-            background: linear-gradient(145deg, #F06292, #D81B60);
-            color: white; box-shadow: 0 6px 12px rgba(216,27,96,0.3);
+            background: #25D366;
+            color: white;
         }
-        .content-header { display: flex; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
-        .stats { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-        .stat-item { display: flex; justify-content: space-between; padding: 12px 16px; background: var(--bg-tertiary); border-radius: 30px; }
-        .stat-value { font-weight: 700; color: #AD1457; }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .admin-content {
+            min-height: 500px;
+        }
+        
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Modal Styles */
         .modal {
-            position: fixed; top:0;left:0;right:0;bottom:0;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(6px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1000; padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
         }
+        
         .modal-content {
-            background: var(--bg-secondary); border-radius: 32px;
-            max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;
-            border: 1px solid #F8BBD0; box-shadow: 0 20px 40px rgba(236,64,122,0.2);
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
         }
-        .modal-header { display: flex; justify-content: space-between; padding: 24px 28px; border-bottom: 1px solid #F8BBD0; }
-        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; }
-        .modal-close:hover { background: #FCE4EC; color: #D81B60; }
-        .modal-body { padding: 28px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #AD1457; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 14px 18px; border: 2px solid #F8BBD0;
-            border-radius: 30px; background: var(--bg-tertiary);
-            color: var(--text-primary); font-size: 15px; font-family: 'Poppins', sans-serif;
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none; border-color: #EC407A; box-shadow: 0 0 0 3px rgba(236,64,122,0.15);
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        .data-table th, .data-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid #F8BBD0; }
-        .data-table th { background: #FCE4EC; font-weight: 700; color: #AD1457; }
-        .data-table tr:hover { background: #FFF0F5; }
-        .btn-sm { padding: 6px 14px; font-size: 13px; }
-        .btn-danger { background: #E57373; color: white; }
-        .btn-danger:hover { background: #D32F2F; }
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-        .empty-state-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.7; color: #F06292; }
+        
+        .modal-header h3 {
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 20px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            min-height: 36px;
+            min-width: 36px;
+        }
+        
+        .modal-close:hover {
+            background: var(--hover-color);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        /* Form Styles in Modal */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .data-table tr:hover {
+            background: var(--hover-color);
+        }
+        
+        .data-table .actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .btn-danger {
+            background: #ff3b30;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e0352b;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                width: 100%;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .modal-content {
+                margin: 10px;
+            }
+        }
     </style>
 </body>
 </html>
+
+
