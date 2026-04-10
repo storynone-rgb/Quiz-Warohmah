@@ -1,4 +1,6 @@
-// user.js - REVISI MINIMAL UNTUK URUTAN COURSE SAJA
+// user.js - Untuk website 2 (quiz-warohmah)
+// Tidak ada sisa konfigurasi dari website 1
+
 const firebaseConfig = {
   apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
   authDomain: "quiz-warohmah.firebaseapp.com",
@@ -15,7 +17,6 @@ import {
   collection, 
   getDocs,
   query,
-  orderBy,
   addDoc,
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
@@ -54,10 +55,7 @@ const quitBtn = document.getElementById('quitBtn');
 const themeToggle = document.getElementById('themeToggle');
 
 // ========== FUNGSI NATURAL SORT ==========
-
-// Fungsi untuk mengurutkan secara natural (1, 2, 3, 10, bukan 1, 10, 2, 3)
 function naturalSort(a, b) {
-  // Ekstrak angka dari string
   const extractNumbers = (str) => {
     const matches = str.match(/\d+/g);
     return matches ? matches.map(Number) : [];
@@ -66,14 +64,12 @@ function naturalSort(a, b) {
   const aNumbers = extractNumbers(a.nama || '');
   const bNumbers = extractNumbers(b.nama || '');
   
-  // Jika ada angka di kedua nama, bandingkan angka pertama
   if (aNumbers.length > 0 && bNumbers.length > 0) {
     if (aNumbers[0] !== bNumbers[0]) {
       return aNumbers[0] - bNumbers[0];
     }
   }
   
-  // Fallback: bandingkan string secara normal
   return (a.nama || '').localeCompare(b.nama || '', undefined, { 
     numeric: true, 
     sensitivity: 'base' 
@@ -81,7 +77,6 @@ function naturalSort(a, b) {
 }
 
 // ========== FUNGSI PENGACAKAN ==========
-
 function shuffleArray(array) {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -94,10 +89,8 @@ function shuffleArray(array) {
 function prepareRandomizedQuiz(questions) {
   if (!questions || questions.length === 0) return [];
   
-  // Acak urutan soal
   const shuffledQuestions = shuffleArray(questions);
   
-  // Untuk setiap soal, acak pilihan jawabannya
   return shuffledQuestions.map(question => {
     const options = question.pilihan || question.options || {};
     const correctAnswer = question.jawaban || question.correct;
@@ -105,12 +98,10 @@ function prepareRandomizedQuiz(questions) {
     const optionsArray = Object.entries(options);
     if (optionsArray.length === 0) return question;
     
-    // Acak urutan pilihan
     const shuffledOptions = shuffleArray(optionsArray);
     let newCorrectAnswer = '';
     const newOptions = {};
     
-    // Rekonstruksi options dengan label baru
     shuffledOptions.forEach(([originalKey, value], idx) => {
       const newKey = String.fromCharCode(65 + idx);
       newOptions[newKey] = value;
@@ -120,7 +111,6 @@ function prepareRandomizedQuiz(questions) {
       }
     });
     
-    // Validasi
     if (!newCorrectAnswer && correctAnswer && options[correctAnswer]) {
       const correctText = options[correctAnswer];
       Object.entries(newOptions).forEach(([key, value]) => {
@@ -140,8 +130,6 @@ function prepareRandomizedQuiz(questions) {
 }
 
 // ========== FUNGSI UTAMA ==========
-
-// Load Courses dengan natural sorting
 async function loadCourses() {
   if (!mataKuliahId) {
     coursesList.innerHTML = `
@@ -160,13 +148,13 @@ async function loadCourses() {
   }
   
   try {
-    const coursesSnapshot = await getDocs(query(collection(db, "mata_kuliah", mataKuliahId, "courses"), orderBy("nama", "asc")));
+    // Hapus orderBy karena kita akan sorting manual dengan naturalSort
+    const coursesSnapshot = await getDocs(collection(db, "mata_kuliah", mataKuliahId, "courses"));
     let courses = coursesSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
     
-    // **PERBAIKAN DI SINI: Natural sort untuk mengurutkan angka dengan benar**
     courses.sort(naturalSort);
     
     if (courses.length === 0) {
@@ -185,7 +173,6 @@ async function loadCourses() {
       return;
     }
     
-    // **PERBAIKAN: Gunakan index dari array yang sudah di-sort**
     coursesList.innerHTML = courses.map((course, index) => `
       <div class="course-item slide-in" style="animation-delay: ${index * 0.05}s;">
         <div class="left">
@@ -241,7 +228,7 @@ window.startQuiz = async function(courseId, courseName) {
   backBtn.style.display = 'inline-flex';
   
   try {
-    const questionsSnapshot = await getDocs(query(collection(db, "mata_kuliah", mataKuliahId, "courses", courseId, "soal")));
+    const questionsSnapshot = await getDocs(collection(db, "mata_kuliah", mataKuliahId, "courses", courseId, "soal"));
     originalQuestions = questionsSnapshot.docs.map(doc => ({
       id: doc.id,
       pertanyaan: doc.data().pertanyaan || doc.data().question,
@@ -266,15 +253,12 @@ window.startQuiz = async function(courseId, courseName) {
       return;
     }
     
-    // Acak soal
     randomizedQuestions = prepareRandomizedQuiz(originalQuestions);
     
-    // Initialize quiz
     currentQuestionIndex = 0;
     userAnswers = {};
     timer = 0;
     
-    // Start timer
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(() => {
       timer++;
@@ -283,7 +267,6 @@ window.startQuiz = async function(courseId, courseName) {
       timerDisplay.textContent = `${minutes}:${seconds}`;
     }, 1000);
     
-    // Render first question
     renderQuestion();
     
   } catch (error) {
@@ -303,7 +286,6 @@ window.startQuiz = async function(courseId, courseName) {
   }
 };
 
-// Render Question
 function renderQuestion() {
   const question = randomizedQuestions[currentQuestionIndex];
   if (!question) return;
@@ -333,19 +315,16 @@ function renderQuestion() {
     </div>
   `;
   
-  // Update button states
   prevBtn.style.display = currentQuestionIndex > 0 ? 'flex' : 'none';
   nextBtn.style.display = currentQuestionIndex < randomizedQuestions.length - 1 ? 'flex' : 'none';
   finishBtn.style.display = currentQuestionIndex === randomizedQuestions.length - 1 ? 'flex' : 'none';
 }
 
-// Select Answer
 window.selectAnswer = function(answer) {
   userAnswers[currentQuestionIndex] = answer;
   renderQuestion();
 };
 
-// Navigation
 prevBtn.addEventListener('click', () => {
   if (currentQuestionIndex > 0) {
     currentQuestionIndex--;
@@ -363,15 +342,12 @@ nextBtn.addEventListener('click', () => {
 finishBtn.addEventListener('click', finishQuiz);
 quitBtn.addEventListener('click', confirmQuit);
 
-// Finish Quiz
 async function finishQuiz() {
-  // Stop timer
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
   }
   
-  // Calculate score
   let score = 0;
   const results = randomizedQuestions.map((q, index) => {
     const userAnswerKey = userAnswers[index];
@@ -380,14 +356,12 @@ async function finishQuiz() {
     
     if (isCorrect) score++;
     
-    // Dapatkan teks jawaban lengkap
     const userAnswerText = userAnswerKey 
       ? `${userAnswerKey}. ${q.pilihan[userAnswerKey] || 'Tidak ada teks jawaban'}` 
       : 'Tidak dijawab';
     
     const correctAnswerText = `${correctAnswerKey}. ${q.pilihan[correctAnswerKey] || 'Tidak ada teks jawaban'}`;
     
-    // Dapatkan semua pilihan
     const allOptions = [];
     for (const [key, value] of Object.entries(q.pilihan || {})) {
       allOptions.push(`${key}. ${value}`);
@@ -406,7 +380,6 @@ async function finishQuiz() {
     };
   });
   
-  // Save result to localStorage
   const result = {
     courseName: currentCourse.name,
     courseId: currentCourse.id,
@@ -420,7 +393,6 @@ async function finishQuiz() {
   
   localStorage.setItem('quizResult', JSON.stringify(result));
   
-  // Save to Firebase
   try {
     await addDoc(collection(db, "quiz_results"), {
       courseId: currentCourse.id,
@@ -434,11 +406,9 @@ async function finishQuiz() {
     console.error("Error saving result:", error);
   }
   
-  // Redirect to result page
   window.location.href = 'result.html';
 }
 
-// Show Courses
 window.showCourses = function() {
   if (timerInterval) {
     clearInterval(timerInterval);
@@ -452,7 +422,6 @@ window.showCourses = function() {
   backBtn.style.display = 'none';
 };
 
-// Confirm Quit
 function confirmQuit() {
   const modal = document.getElementById('confirmModal');
   const message = document.getElementById('confirmMessage');
@@ -472,7 +441,6 @@ function confirmQuit() {
   };
 }
 
-// Theme Management
 function initTheme() {
   const savedTheme = localStorage.getItem('quiz-theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -502,15 +470,12 @@ function updateThemeIcon() {
     : '<i class="fas fa-moon"></i>';
 }
 
-// Back button
 backBtn.addEventListener('click', showCourses);
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   themeToggle.addEventListener('click', toggleTheme);
   loadCourses();
 });
 
-// Make functions globally available
 window.toggleTheme = toggleTheme;
