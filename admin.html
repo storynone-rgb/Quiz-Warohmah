@@ -3,42 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#D81B60">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/lock--v1.png">
+    <meta name="theme-color" content="#075E54">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/whatsapp.png">
+    
     <title>QuizApp - Admin Login</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* Reset untuk admin page */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #fdf2f8;
-            color: #4a2c3a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
             min-height: 100vh;
         }
-        [data-theme="dark"] body { background: #2d1e24; color: #fce4ec; }
-        .app { max-width: 1200px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        [data-theme="dark"] body {
+            background: #121212;
+            color: #ffffff;
+        }
+        
+        /* App Container */
+        .app {
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header - FIXED: Hanya satu tombol */
         .topbar {
-            background: linear-gradient(135deg, #F48FB1, #EC407A);
+            background: #25D366;
             color: white;
             padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(236, 64, 122, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 2px solid #FCE4EC;
         }
-        .topbar h1 { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .top-actions { display: flex; gap: 10px; }
+        
+        .topbar h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* HANYA SATU TOMBOL - SIMPLE */
         .btn {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
             padding: 8px 16px;
-            border-radius: 30px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -48,250 +84,516 @@
             gap: 8px;
             transition: all 0.2s;
             min-height: 36px;
-            backdrop-filter: blur(4px);
         }
-        .btn:hover { background: rgba(255, 255, 255, 0.4); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(236, 64, 122, 0.2); }
-        .btn i { font-size: 16px; }
-        .container { flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn i {
+            font-size: 16px;
+        }
+        
+        /* Main Content */
+        .container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Card */
         .card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(236, 64, 122, 0.15), 0 6px 12px rgba(0,0,0,0.05);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             padding: 30px;
             width: 100%;
-            max-width: 420px;
-            border: 1px solid #F8BBD0;
+            max-width: 400px;
         }
+        
         [data-theme="dark"] .card {
-            background: rgba(45, 30, 36, 0.9);
-            border: 1px solid #AD1457;
-            box-shadow: 0 20px 40px rgba(173, 20, 87, 0.3);
+            background: #1e1e1e;
+            border: 1px solid #333;
         }
-        .stack { display: flex; flex-direction: column; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-size: 14px; font-weight: 600; color: #AD1457; }
-        [data-theme="dark"] .form-group label { color: #F48FB1; }
+        
+        /* Form Styles */
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        [data-theme="dark"] .form-group label {
+            color: #aaa;
+        }
+        
         .form-group input {
-            padding: 14px 18px;
-            border: 2px solid #F8BBD0;
-            border-radius: 30px;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s;
             width: 100%;
-            background: #fff5f8;
-            color: #4a2c3a;
-            font-family: 'Poppins', sans-serif;
+            background: #fafafa;
+            color: #333;
         }
-        [data-theme="dark"] .form-group input { background: #3e2a32; border-color: #AD1457; color: #fce4ec; }
-        .form-group input:focus { outline: none; border-color: #EC407A; box-shadow: 0 0 0 4px rgba(236, 64, 122, 0.15); }
+        
+        [data-theme="dark"] .form-group input {
+            background: #2d2d2d;
+            border-color: #444;
+            color: white;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+        
+        /* Login Button */
         .btn-primary {
-            background: linear-gradient(135deg, #F06292, #D81B60);
+            background: #25D366;
             color: white;
             border: none;
-            padding: 16px;
-            border-radius: 40px;
-            font-size: 18px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
             transition: all 0.3s;
             margin-top: 10px;
-            box-shadow: 0 8px 20px rgba(216, 27, 96, 0.3);
-            letter-spacing: 0.5px;
         }
-        .btn-primary:hover { background: linear-gradient(135deg, #EC407A, #C2185B); transform: translateY(-3px); box-shadow: 0 12px 24px rgba(194, 24, 91, 0.4); }
-        #loginStatus { margin-top: 20px; padding: 12px; border-radius: 30px; font-size: 14px; text-align: center; }
-        #loginStatus.success { background: rgba(236, 64, 122, 0.1); color: #AD1457; border: 1px solid #F48FB1; }
-        #loginStatus.error { background: rgba(255, 82, 82, 0.1); color: #d32f2f; border: 1px solid #ffcdd2; }
-        .footer { text-align: center; padding: 20px; color: #AD1457; font-size: 14px; border-top: 1px solid #F8BBD0; margin-top: 40px; }
-        [data-theme="dark"] .footer { color: #F48FB1; border-top-color: #6a3a4e; }
+        
+        .btn-primary:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        
+        /* Status Messages */
+        #loginStatus {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        #loginStatus.success {
+            background: rgba(37, 211, 102, 0.1);
+            color: #128C7E;
+            border: 1px solid rgba(37, 211, 102, 0.3);
+        }
+        
+        #loginStatus.error {
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 40px;
+        }
+        
+        [data-theme="dark"] .footer {
+            color: #aaa;
+            border-top-color: #333;
+        }
+        
+        /* Theme Toggle */
         .theme-switcher {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 40px;
-            background: #EC407A;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #25D366;
             color: white;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(236, 64, 122, 0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             z-index: 100;
-            font-size: 22px;
-            transition: all 0.2s;
+            font-size: 20px;
         }
-        .theme-switcher:hover { background: #D81B60; transform: scale(1.05); }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 12px 16px;
+            }
+            
+            .topbar h1 {
+                font-size: 18px;
+            }
+            
+            .card {
+                padding: 20px;
+                margin: 0 10px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                min-height: 44px;
+                font-size: 13px;
+            }
+            
+            .theme-switcher {
+                bottom: 70px;
+                right: 16px;
+                width: 44px;
+                height: 44px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .topbar h1 span {
+                display: none;
+            }
+            
+            .topbar h1 i {
+                margin-right: 0;
+            }
+            
+            .btn {
+                padding: 10px;
+            }
+            
+            .btn span {
+                display: none;
+            }
+            
+            .btn i {
+                font-size: 18px;
+            }
+        }
+        
+        /* Splash Screen */
         #splash-screen {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(145deg, #F8BBD0, #F06292);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.5s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #075E54;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
         }
-        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+        
+        #splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
         .splash-logo {
-            width: 90px; height: 90px; background: white; border-radius: 30px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; animation: pulse 2s infinite; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
         }
-        .splash-logo i { font-size: 44px; color: #EC407A; }
-        .splash-text { color: white; font-size: 20px; font-weight: 600; text-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        
+        .splash-logo i {
+            font-size: 40px;
+            color: #25D366;
+        }
+        
+        .splash-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.9; }
-        }
-        @media (max-width: 768px) {
-            .topbar { padding: 12px 16px; }
-            .topbar h1 { font-size: 18px; }
-            .card { padding: 24px 20px; margin: 0 10px; }
-            .btn { padding: 8px 12px; min-height: 44px; font-size: 13px; }
-            .theme-switcher { bottom: 70px; right: 16px; width: 50px; height: 50px; }
-        }
-        @media (max-width: 480px) {
-            .topbar h1 span { display: none; }
-            .btn { padding: 10px; }
-            .btn span { display: none; }
+            50% { transform: scale(1.05); opacity: 0.9; }
         }
     </style>
 </head>
 <body data-theme="light">
+    <!-- Splash Screen -->
     <div id="splash-screen">
-        <div class="splash-logo"><i class="fas fa-lock"></i></div>
+        <div class="splash-logo">
+            <i class="fas fa-lock"></i>
+        </div>
         <div class="splash-text">Admin Login</div>
     </div>
+
     <div class="app">
+        <!-- Header - HANYA SATU TOMBOL -->
         <header class="topbar">
-            <h1><i class="fas fa-user-shield"></i><span>Admin Login</span></h1>
+            <h1>
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Login</span>
+            </h1>
             <div class="top-actions">
-                <a href="index.html" class="btn"><i class="fas fa-home"></i><span>Home</span></a>
+                <!-- SATU TOMBOL SAJA -->
+                <a href="index.html" class="btn">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
             </div>
         </header>
+
+        <!-- Main Content -->
         <main class="container">
             <div class="card">
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 90px; height: 90px; background: linear-gradient(145deg, #F48FB1, #D81B60); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(216,27,96,0.3);">
-                        <i class="fas fa-lock" style="color: white; font-size: 36px;"></i>
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-lock" style="color: white; font-size: 32px;"></i>
                     </div>
-                    <h2 style="margin-bottom: 8px; color: #AD1457; font-weight: 700;">Admin Access</h2>
-                    <p style="color: #7b4a5c; font-size: 14px;">Silakan login dengan akun admin</p>
+                    <h2 style="margin-bottom: 8px;">Admin Access</h2>
+                    <p style="color: #666; font-size: 14px;">Silakan login dengan akun admin</p>
                 </div>
+                
                 <form id="loginForm" class="stack">
                     <div class="form-group">
                         <label for="email">Email</label>
                         <div style="position: relative;">
-                            <i class="fas fa-envelope" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #D81B60; opacity: 0.8;"></i>
-                            <input type="email" id="email" placeholder="admin@example.com" required style="padding-left: 50px;">
+                            <i class="fas fa-envelope" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                            <input type="email" id="email" placeholder="admin@example.com" required style="padding-left: 45px;">
                         </div>
                     </div>
+                    
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div style="position: relative;">
-                            <i class="fas fa-lock" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #D81B60; opacity: 0.8;"></i>
-                            <input type="password" id="password" placeholder="••••••••" required style="padding-left: 50px;">
+                            <i class="fas fa-lock" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                            <input type="password" id="password" placeholder="••••••••" required style="padding-left: 45px;">
                         </div>
                     </div>
-                    <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+                    
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
                 </form>
+                
                 <div id="loginStatus"></div>
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #F8BBD0;">
-                    <p style="color: #AD1457; font-size: 12px; text-align: center;"><i class="fas fa-info-circle"></i> Hanya admin terdaftar yang dapat login</p>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                    <p style="color: #666; font-size: 12px; text-align: center;">
+                        <i class="fas fa-info-circle"></i> Hanya admin terdaftar yang dapat login
+                    </p>
                 </div>
             </div>
         </main>
-        <footer class="footer"><small>© 2026 QuizApp • Admin Login</small></footer>
-        <button id="themeToggle" class="theme-switcher"><i class="fas fa-moon"></i></button>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <small>© 2024 QuizApp • Admin Login</small>
+        </footer>
+        
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="theme-switcher">
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
+
+    <!-- JavaScript -->
     <script>
+        // Hide splash screen
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                splash.classList.add('hidden');
-                setTimeout(() => splash.style.display = 'none', 500);
+                const splashScreen = document.getElementById('splash-screen');
+                if (splashScreen) {
+                    splashScreen.classList.add('hidden');
+                    setTimeout(() => {
+                        splashScreen.style.display = 'none';
+                    }, 500);
+                }
             }, 500);
         });
+
+        // Theme Management
         function initTheme() {
             const savedTheme = localStorage.getItem('quiz-theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const toggle = document.getElementById('themeToggle');
+            const themeToggle = document.getElementById('themeToggle');
+            
             if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                toggle.innerHTML = '<i class="fas fa-sun"></i>';
+                if (themeToggle) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
             } else {
                 document.documentElement.setAttribute('data-theme', 'light');
-                toggle.innerHTML = '<i class="fas fa-moon"></i>';
+                if (themeToggle) {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
             }
         }
+
         function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const themeToggle = document.getElementById('themeToggle');
+            
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('quiz-theme', newTheme);
-            const toggle = document.getElementById('themeToggle');
-            toggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            
+            if (themeToggle) {
+                themeToggle.innerHTML = newTheme === 'dark' 
+                    ? '<i class="fas fa-sun"></i>' 
+                    : '<i class="fas fa-moon"></i>';
+            }
         }
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-            if (localStorage.getItem('adminToken')) window.location.href = 'edit.html';
+            
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // Check if already logged in
+            const adminToken = localStorage.getItem('adminToken');
+            if (adminToken) {
+                // Redirect to edit.html jika sudah login
+                window.location.href = 'edit.html';
+            }
+            
+            // Setup form submission
             setupLoginForm();
         });
+
+        // Login Form Handler
         function setupLoginForm() {
-            const form = document.getElementById('loginForm');
-            const status = document.getElementById('loginStatus');
-            form.addEventListener('submit', async function(e) {
+            const loginForm = document.getElementById('loginForm');
+            const loginStatus = document.getElementById('loginStatus');
+            
+            if (!loginForm) return;
+            
+            loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
+                
                 if (!email || !password) {
-                    status.innerHTML = '<div class="error">Email dan password harus diisi</div>';
-                    status.className = 'error';
+                    loginStatus.innerHTML = '<div class="error">Email dan password harus diisi</div>';
+                    loginStatus.className = 'error';
                     return;
                 }
-                status.innerHTML = '<div>Memproses login...</div>';
-                status.className = '';
+                
+                loginStatus.innerHTML = '<div>Memproses login...</div>';
+                loginStatus.className = '';
+                
                 try {
+                    // Import Firebase modules
                     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js");
                     const { getAuth, signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js");
+                    
+                    // Firebase config
                     const firebaseConfig = {
-                        apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
-                        authDomain: "quiz-warohmah.firebaseapp.com",
-                        projectId: "quiz-warohmah",
-                        storageBucket: "quiz-warohmah.firebasestorage.app",
-                        messagingSenderId: "271883195532",
-                        appId: "1:271883195532:web:723ea686eb8cba402397a9",
-                        measurementId: "G-J39252WX95"
+                        apiKey: "AIzaSyDdTjMnaetKZ9g0Xsh9sR3H0Otm_nFyy8o",
+                        authDomain: "quizappfaizul.firebaseapp.com",
+                        projectId: "quizappfaizul",
+                        storageBucket: "quizappfaizul.firebasestorage.app",
+                        messagingSenderId: "177544522930",
+                        appId: "1:177544522930:web:354794b407cf29d86cedab"
                     };
+                    
+                    // Initialize Firebase
                     const app = initializeApp(firebaseConfig);
                     const auth = getAuth(app);
+                    
+                    // Sign in
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                    status.innerHTML = '<div class="success">Login berhasil! Mengarahkan...</div>';
-                    status.className = 'success';
+                    
+                    // Success
+                    loginStatus.innerHTML = '<div class="success">Login berhasil! Mengarahkan...</div>';
+                    loginStatus.className = 'success';
+                    
+                    // Save token
                     localStorage.setItem('adminToken', user.uid);
                     localStorage.setItem('adminEmail', user.email);
-                    setTimeout(() => window.location.href = 'edit.html', 1000);
+                    
+                    // Redirect
+                    setTimeout(() => {
+                        window.location.href = 'edit.html';
+                    }, 1000);
+                    
                 } catch (error) {
-                    let msg = 'Login gagal. Cek email dan password.';
-                    if (error.code === 'auth/invalid-email') msg = 'Email tidak valid';
-                    else if (error.code === 'auth/user-not-found') msg = 'Akun tidak ditemukan';
-                    else if (error.code === 'auth/wrong-password') msg = 'Password salah';
-                    else if (error.code === 'auth/too-many-requests') msg = 'Terlalu banyak percobaan. Coba lagi nanti.';
-                    else if (error.code === 'auth/network-request-failed') msg = 'Koneksi internet bermasalah';
-                    status.innerHTML = `<div class="error">${msg}</div>`;
-                    status.className = 'error';
+                    console.error('Login error:', error);
+                    
+                    let errorMessage = 'Login gagal. Cek email dan password.';
+                    if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Email tidak valid';
+                    } else if (error.code === 'auth/user-not-found') {
+                        errorMessage = 'Akun tidak ditemukan';
+                    } else if (error.code === 'auth/wrong-password') {
+                        errorMessage = 'Password salah';
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMessage = 'Terlalu banyak percobaan. Coba lagi nanti.';
+                    } else if (error.code === 'auth/network-request-failed') {
+                        errorMessage = 'Koneksi internet bermasalah';
+                    }
+                    
+                    loginStatus.innerHTML = `<div class="error">${errorMessage}</div>`;
+                    loginStatus.className = 'error';
                 }
             });
         }
+
+        // Network status
         window.addEventListener('offline', function() {
-            const div = document.createElement('div');
-            div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#FF9500;color:#fff;text-align:center;padding:10px;z-index:10000;';
-            div.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline';
-            document.body.prepend(div);
-            setTimeout(() => div.remove(), 5000);
+            const statusDiv = document.createElement('div');
+            statusDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: #FF9500;
+                color: white;
+                text-align: center;
+                padding: 10px;
+                z-index: 10000;
+                font-size: 14px;
+            `;
+            statusDiv.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline';
+            document.body.prepend(statusDiv);
+            
+            setTimeout(() => {
+                if (statusDiv.parentNode) {
+                    statusDiv.parentNode.removeChild(statusDiv);
+                }
+            }, 5000);
         });
     </script>
 </body>
