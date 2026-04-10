@@ -1,15 +1,47 @@
-// app.js - Home Page Script (User) - Firebase quiz-warohmah (Non-module version)
+// app.js - Home Page Script (User) - OPTIMIZED FOR MOBILE
 const firebaseConfig = {
   apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
   authDomain: "quiz-warohmah.firebaseapp.com",
   projectId: "quiz-warohmah",
   storageBucket: "quiz-warohmah.firebasestorage.app",
   messagingSenderId: "271883195532",
-  appId: "1:271883195532:web:723ea686eb8cba402397a9"
+  appId: "1:271883195532:web:723ea686eb8cba402397a9",
+  measurementId: "G-J39252WX95"
 };
 
-// Firebase akan diinisialisasi setelah SDK dimuat (asumsinya SDK sudah dimuat di HTML)
-let db;
+// Import Firebase dengan lazy loading
+let firebaseApp, firebaseAuth, firebaseFirestore;
+
+async function loadFirebase() {
+  if (typeof firebase === 'undefined') {
+    await Promise.all([
+      loadScript("https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"),
+      loadScript("https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"),
+      loadScript("https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js")
+    ]);
+  }
+  
+  if (!firebase.apps.length) {
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+  } else {
+    firebaseApp = firebase.apps[0];
+  }
+  
+  firebaseAuth = firebase.auth;
+  firebaseFirestore = firebase.firestore;
+  
+  return { firebaseApp, firebaseAuth, firebaseFirestore };
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
 
 // DOM Elements
 const mataKuliahList = document.getElementById('mataKuliahList');
@@ -22,20 +54,7 @@ const totalQuestions = document.getElementById('totalQuestions');
 let isOnline = navigator.onLine;
 let cachedData = null;
 
-// Inisialisasi Firebase setelah SDK siap
-function initFirebase() {
-  if (typeof firebase === 'undefined') {
-    console.error("Firebase SDK not loaded yet");
-    return false;
-  }
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  db = firebase.firestore();
-  return true;
-}
-
-// Load Mata Kuliah
+// Load Mata Kuliah dengan caching
 async function loadMataKuliah() {
   try {
     mataKuliahList.innerHTML = `
@@ -45,17 +64,19 @@ async function loadMataKuliah() {
       </div>
     `;
     
-    if (!db && !initFirebase()) {
-      throw new Error("Firebase not initialized");
-    }
-    
-    // Coba load dari cache dulu jika offline
+    // Coba load dari cache dulu
     if (cachedData && !isOnline) {
       displayMataKuliah(cachedData);
       return;
     }
     
-    const snapshot = await db.collection("mata_kuliah").orderBy("nama", "asc").get();
+    // Load Firebase
+    const { firebaseFirestore } = await loadFirebase();
+    const db = firebaseFirestore();
+    
+    // Get mata kuliah
+    const q = firebaseFirestore.query(firebaseFirestore.collection(db, "mata_kuliah"), firebaseFirestore.orderBy("nama", "asc"));
+    const snapshot = await firebaseFirestore.getDocs(q);
     const mataKuliah = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -86,10 +107,10 @@ async function loadMataKuliah() {
     let totalSoal = 0;
     for (const mk of mataKuliah) {
       try {
-        const coursesSnapshot = await db.collection("mata_kuliah").doc(mk.id).collection("courses").get();
-        coursesSnapshot.forEach(doc => {
-          totalSoal += doc.data().totalSoal || 0;
-        });
+        const coursesSnapshot = await firebaseFirestore.getDocs(firebaseFirestore.collection(db, "mata_kuliah", mk.id, "courses"));
+        for (const courseDoc of coursesSnapshot.docs) {
+          totalSoal += courseDoc.data().totalSoal || 0;
+        }
       } catch (error) {
         console.log(`Error getting courses for ${mk.nama}:`, error);
       }
@@ -132,9 +153,11 @@ async function loadMataKuliah() {
 }
 
 function displayMataKuliah(mataKuliah, totalSoal = 0) {
-  // totalCourses dan totalQuestions sudah diupdate sebelumnya
-  mataKuliahList.innerHTML = mataKuliah.map((mk, index) => `
-    <div class="course-item slide-in" style="animation-delay: ${index * 0.1}s;">
+  totalCourses.textContent = `${mataKuliah.length} Mata Kuliah`;
+  totalQuestions.textContent = `${totalSoal} Soal`;
+  
+  mataKuliahList.innerHTML = mataKuliah.map(mk => `
+    <div class="course-item slide-in" style="animation-delay: ${mataKuliah.indexOf(mk) * 0.1}s;">
       <div class="left">
         <div class="course-badge">${mk.nama?.charAt(0) || 'M'}</div>
         <div>
@@ -161,6 +184,7 @@ function initTheme() {
   const savedTheme = localStorage.getItem('quiz-theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
+  // Set initial theme
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.documentElement.setAttribute('data-theme', 'dark');
     themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -168,11 +192,15 @@ function initTheme() {
     document.documentElement.setAttribute('data-theme', 'light');
     themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
   }
+  
+  // Update theme icon based on current theme
+  updateThemeIcon();
 }
 
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
   document.documentElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('quiz-theme', newTheme);
   updateThemeIcon();
@@ -189,6 +217,7 @@ function updateThemeIcon() {
 function handleNetworkChange() {
   isOnline = navigator.onLine;
   if (isOnline) {
+    // Refresh data jika online kembali
     loadMataKuliah();
   }
 }
@@ -202,21 +231,12 @@ window.addEventListener('offline', handleNetworkChange);
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
-  // Pastikan Firebase SDK sudah dimuat, jika belum tunggu sebentar
-  if (typeof firebase !== 'undefined') {
-    initFirebase();
+  
+  // Delay loading Firebase untuk meningkatkan perceived performance
+  setTimeout(() => {
     loadMataKuliah();
-  } else {
-    // Tunggu Firebase SDK selesai dimuat (asumsinya dimuat di HTML)
-    const checkFirebase = setInterval(() => {
-      if (typeof firebase !== 'undefined') {
-        clearInterval(checkFirebase);
-        initFirebase();
-        loadMataKuliah();
-      }
-    }, 100);
-  }
+  }, 100);
 });
 
-// Make functions globally available
+// Make functions globally available for onclick handlers
 window.toggleTheme = toggleTheme;
