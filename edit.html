@@ -1,634 +1,284 @@
-// edit.js - Admin Dashboard dengan Firebase quiz-warohmah
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-// Konfigurasi Firebase baru
-const firebaseConfig = {
-    apiKey: "AIzaSyB1_u4tQjJmIvzHNj0nmxjBM2nDORpZ38U",
-    authDomain: "quiz-warohmah.firebaseapp.com",
-    projectId: "quiz-warohmah",
-    storageBucket: "quiz-warohmah.firebasestorage.app",
-    messagingSenderId: "271883195532",
-    appId: "1:271883195532:web:723ea686eb8cba402397a9"
-};
-
-// Inisialisasi Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// State
-let currentView = 'mata-kuliah';
-let selectedMataKuliahId = null;
-let selectedCourseId = null;
-let currentData = [];
-
-// DOM Elements
-const userInfo = document.getElementById('userInfo');
-const logoutBtn = document.getElementById('logoutBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-const themeToggle = document.getElementById('themeToggle');
-const contentTitle = document.getElementById('contentTitle');
-const contentSubtitle = document.getElementById('contentSubtitle');
-const adminContent = document.getElementById('adminContent');
-const actionButtons = document.getElementById('actionButtons');
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const modalBody = document.getElementById('modalBody');
-const modalClose = document.querySelector('.modal-close');
-
-// Helper Functions
-function showLoading() {
-    adminContent.innerHTML = '<div style="text-align: center; padding: 60px;"><div class="spinner"></div><p>Memuat data...</p></div>';
-}
-
-function showError(message) {
-    adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div><h3>Error</h3><p>${message}</p><button onclick="location.reload()" class="btn primary">Refresh</button></div>`;
-}
-
-function closeModal() {
-    modal.style.display = 'none';
-}
-
-function openModal(title, bodyHtml) {
-    modalTitle.textContent = title;
-    modalBody.innerHTML = bodyHtml;
-    modal.style.display = 'flex';
-}
-
-// Auth check
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        window.location.href = 'admin.html';
-        return;
-    }
-    userInfo.textContent = `${user.email} | Admin`;
-    loadDashboard();
-});
-
-// Logout
-logoutBtn.addEventListener('click', async () => {
-    await signOut(auth);
-    localStorage.removeItem('adminToken');
-    window.location.href = 'admin.html';
-});
-
-// Refresh
-refreshBtn.addEventListener('click', () => {
-    loadCurrentView();
-});
-
-// Theme
-function initTheme() {
-    const saved = localStorage.getItem('quiz-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved === 'dark' || (!saved && prefersDark) ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    updateThemeIcon();
-}
-function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const newTheme = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('quiz-theme', newTheme);
-    updateThemeIcon();
-}
-function updateThemeIcon() {
-    const theme = document.documentElement.getAttribute('data-theme');
-    themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-}
-themeToggle.addEventListener('click', toggleTheme);
-initTheme();
-
-// Menu navigation
-document.querySelectorAll('.menu-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentView = btn.dataset.view;
-        loadCurrentView();
-    });
-});
-
-function loadCurrentView() {
-    if (currentView === 'mata-kuliah') loadMataKuliah();
-    else if (currentView === 'courses') loadCourses();
-    else if (currentView === 'soal') loadSoal();
-    else if (currentView === 'stats') loadStats();
-}
-
-// Load Mata Kuliah
-async function loadMataKuliah() {
-    showLoading();
-    try {
-        const q = query(collection(db, "mata_kuliah"), orderBy("nama", "asc"));
-        const snapshot = await getDocs(q);
-        currentData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- PWA & Mobile Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#D81B60" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#2d1e24" media="(prefers-color-scheme: dark)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="QuizApp">
+    <meta name="application-name" content="QuizApp">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-TileColor" content="#D81B60">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="https://img.icons8.com/color/192/lock--v1.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/lock--v1.png">
+    
+    <title>QuizApp - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Mobile optimizations for admin dashboard */
+        .mobile-only { display: none; }
+        .desktop-only { display: block; }
         
-        contentTitle.textContent = "Mata Kuliah";
-        contentSubtitle.textContent = "Kelola daftar mata kuliah";
-        actionButtons.innerHTML = `<button class="btn primary" onclick="showAddMataKuliah()"><i class="fas fa-plus"></i> Tambah Mata Kuliah</button>`;
-        
-        if (currentData.length === 0) {
-            adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-book"></i></div><h3>Belum ada mata kuliah</h3><button class="btn primary" onclick="showAddMataKuliah()">Tambah Pertama</button></div>`;
-            return;
+        @media (max-width: 768px) {
+            .desktop-only { display: none !important; }
+            .mobile-only { display: block !important; }
+            .admin-container { flex-direction: column !important; }
+            .left-panel { width: 100% !important; min-width: 100% !important; margin-bottom: 16px; }
+            .right-panel { min-height: auto !important; }
+            .content-header { flex-direction: column !important; gap: 16px !important; align-items: flex-start !important; }
+            .data-table-container { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+            .data-table { min-width: 600px !important; }
+            .menu-btn { padding: 14px 16px !important; font-size: 15px !important; }
+            .modal-content { margin: 10px !important; max-height: 80vh !important; overflow-y: auto !important; }
+            .form-row { grid-template-columns: 1fr !important; gap: 12px !important; }
         }
         
-        adminContent.innerHTML = `
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead><tr><th>Nama</th><th>Deskripsi</th><th>Total Course</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                        ${currentData.map(mk => `
-                            <tr>
-                                <td><strong>${escapeHtml(mk.nama)}</strong></td>
-                                <td>${escapeHtml(mk.description || '-')}</td>
-                                <td>${mk.totalCourses || 0}</td>
-                                <td class="actions">
-                                    <button class="btn btn-sm secondary" onclick="editMataKuliah('${mk.id}')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteMataKuliah('${mk.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-        updateStats();
-    } catch (error) {
-        console.error(error);
-        showError("Gagal memuat mata kuliah");
-    }
-}
+        @media (max-width: 480px) {
+            .topbar { padding: 8px 12px !important; }
+            .topbar h1 { font-size: 16px !important; }
+            .btn { padding: 10px 14px !important; font-size: 13px !important; }
+            .modal-body { padding: 16px !important; }
+            .form-actions { flex-direction: column !important; gap: 8px !important; }
+            .form-actions .btn { width: 100% !important; }
+        }
+        
+        /* Splash screen */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(145deg, #F8BBD0, #F06292);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+        .splash-logo {
+            width: 90px; height: 90px;
+            background: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .splash-logo i { font-size: 44px; color: #EC407A; }
+        .splash-text {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 20px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.9; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div id="splash-screen">
+        <div class="splash-logo"><i class="fas fa-cogs"></i></div>
+        <div class="splash-text">Admin Dashboard</div>
+    </div>
 
-// Load Courses (bergantung pada mata kuliah yang dipilih)
-async function loadCourses() {
-    if (!selectedMataKuliahId) {
-        // Tampilkan daftar mata kuliah dulu untuk dipilih
-        showLoading();
-        try {
-            const q = query(collection(db, "mata_kuliah"), orderBy("nama", "asc"));
-            const snapshot = await getDocs(q);
-            const mataKuliahList = snapshot.docs.map(doc => ({ id: doc.id, nama: doc.data().nama }));
-            contentTitle.textContent = "Courses";
-            contentSubtitle.textContent = "Pilih mata kuliah terlebih dahulu";
-            actionButtons.innerHTML = '';
-            if (mataKuliahList.length === 0) {
-                adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-folder"></i></div><h3>Belum ada mata kuliah</h3><a href="#" class="btn primary" onclick="switchView('mata-kuliah')">Buat Mata Kuliah</a></div>`;
-                return;
-            }
-            adminContent.innerHTML = `
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Pilih Mata Kuliah</th><th>Jumlah Course</th></tr></thead>
-                        <tbody>
-                            ${mataKuliahList.map(mk => `
-                                <tr style="cursor:pointer" onclick="selectMataKuliahForCourses('${mk.id}')">
-                                    <td><strong>${escapeHtml(mk.nama)}</strong></td>
-                                    <td>-</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+    <div class="app">
+        <header class="topbar">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(145deg, #F48FB1, #D81B60); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(216,27,96,0.3);">
+                    <i class="fas fa-cogs" style="color: white; font-size: 20px;"></i>
                 </div>
-            `;
-        } catch (error) {
-            showError("Gagal memuat mata kuliah");
-        }
-        return;
-    }
-    // Load courses berdasarkan selectedMataKuliahId
-    showLoading();
-    try {
-        const mataKuliahDoc = await getDoc(doc(db, "mata_kuliah", selectedMataKuliahId));
-        const mataKuliahName = mataKuliahDoc.exists() ? mataKuliahDoc.data().nama : 'Mata Kuliah';
-        const coursesSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses"));
-        currentData = coursesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        contentTitle.textContent = `Courses - ${mataKuliahName}`;
-        contentSubtitle.textContent = "Kelola course dalam mata kuliah ini";
-        actionButtons.innerHTML = `
-            <button class="btn secondary" onclick="backToSelectMataKuliah()"><i class="fas fa-arrow-left"></i> Pilih Mata Kuliah Lain</button>
-            <button class="btn primary" onclick="showAddCourse()"><i class="fas fa-plus"></i> Tambah Course</button>
-        `;
-        
-        if (currentData.length === 0) {
-            adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-folder-open"></i></div><h3>Belum ada course</h3><button class="btn primary" onclick="showAddCourse()">Tambah Course</button></div>`;
-            return;
-        }
-        
-        adminContent.innerHTML = `
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead><tr><th>Nama Course</th><th>Deskripsi</th><th>Total Soal</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                        ${currentData.map(course => `
-                            <tr>
-                                <td><strong>${escapeHtml(course.nama)}</strong></td>
-                                <td>${escapeHtml(course.description || '-')}</td>
-                                <td>${course.totalSoal || 0}</td>
-                                <td class="actions">
-                                    <button class="btn btn-sm secondary" onclick="editCourse('${course.id}')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteCourse('${course.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-        updateStats();
-    } catch (error) {
-        showError("Gagal memuat courses");
-    }
-}
-
-// Load Soal (bergantung pada mata kuliah dan course)
-async function loadSoal() {
-    if (!selectedMataKuliahId) {
-        // Tampilkan pilih mata kuliah
-        showLoading();
-        try {
-            const q = query(collection(db, "mata_kuliah"), orderBy("nama", "asc"));
-            const snapshot = await getDocs(q);
-            const mataKuliahList = snapshot.docs.map(doc => ({ id: doc.id, nama: doc.data().nama }));
-            contentTitle.textContent = "Soal";
-            contentSubtitle.textContent = "Pilih mata kuliah";
-            actionButtons.innerHTML = '';
-            if (mataKuliahList.length === 0) {
-                adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-question-circle"></i></div><h3>Belum ada mata kuliah</h3><a href="#" class="btn primary" onclick="switchView('mata-kuliah')">Buat Mata Kuliah</a></div>`;
-                return;
-            }
-            adminContent.innerHTML = `
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Pilih Mata Kuliah</th></tr></thead>
-                        <tbody>
-                            ${mataKuliahList.map(mk => `<tr style="cursor:pointer" onclick="selectMataKuliahForSoal('${mk.id}')"><td>${escapeHtml(mk.nama)}</td></tr>`).join('')}
-                        </tbody>
-                    </table>
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <p class="muted" style="font-size: 12px; margin-top: 2px;" id="userInfo">Loading...</p>
                 </div>
-            `;
-        } catch (error) { showError("Error"); }
-        return;
-    }
-    if (!selectedCourseId) {
-        // Tampilkan pilih course dari mata kuliah yang dipilih
-        showLoading();
-        try {
-            const mataKuliahDoc = await getDoc(doc(db, "mata_kuliah", selectedMataKuliahId));
-            const mataKuliahName = mataKuliahDoc.exists() ? mataKuliahDoc.data().nama : '';
-            const coursesSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses"));
-            const courses = coursesSnap.docs.map(doc => ({ id: doc.id, nama: doc.data().nama }));
-            contentTitle.textContent = `Soal - ${mataKuliahName}`;
-            contentSubtitle.textContent = "Pilih course";
-            actionButtons.innerHTML = `<button class="btn secondary" onclick="backToSelectMataKuliahSoal()"><i class="fas fa-arrow-left"></i> Pilih Mata Kuliah Lain</button>`;
-            if (courses.length === 0) {
-                adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-folder-open"></i></div><h3>Belum ada course</h3><button class="btn primary" onclick="switchView('courses')">Buat Course</button></div>`;
-                return;
-            }
-            adminContent.innerHTML = `
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Pilih Course</th><th>Jumlah Soal</th></tr></thead>
-                        <tbody>
-                            ${courses.map(c => `<tr style="cursor:pointer" onclick="selectCourseForSoal('${c.id}')"><td>${escapeHtml(c.nama)}</td><td>-</td></tr>`).join('')}
-                        </tbody>
-                    </table>
+            </div>
+            <div class="top-actions">
+                <button id="refreshBtn" class="btn secondary mobile-only"><i class="fas fa-redo"></i></button>
+                <button id="refreshBtn" class="btn secondary desktop-only"><i class="fas fa-redo"></i> Refresh</button>
+                <button id="logoutBtn" class="btn secondary mobile-only"><i class="fas fa-sign-out-alt"></i></button>
+                <button id="logoutBtn" class="btn secondary desktop-only"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                <a href="index.html" class="btn primary mobile-only"><i class="fas fa-eye"></i></a>
+                <a href="index.html" class="btn primary desktop-only"><i class="fas fa-eye"></i> View Site</a>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="admin-container">
+                <aside class="left-panel card">
+                    <h3><i class="fas fa-bars"></i> Menu</h3>
+                    <div class="menu" style="margin: 20px 0;">
+                        <button class="menu-btn active" data-view="mata-kuliah"><i class="fas fa-book"></i> Mata Kuliah</button>
+                        <button class="menu-btn" data-view="courses"><i class="fas fa-folder"></i> Courses</button>
+                        <button class="menu-btn" data-view="soal"><i class="fas fa-question-circle"></i> Soal</button>
+                        <button class="menu-btn" data-view="stats"><i class="fas fa-chart-bar"></i> Statistik</button>
+                    </div>
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <h4><i class="fas fa-info-circle"></i> Info</h4>
+                        <div class="stats">
+                            <div class="stat-item"><span class="stat-label">Mata Kuliah</span><span class="stat-value" id="totalMataKuliah">0</span></div>
+                            <div class="stat-item"><span class="stat-label">Courses</span><span class="stat-value" id="totalCourses">0</span></div>
+                            <div class="stat-item"><span class="stat-label">Soal</span><span class="stat-value" id="totalSoal">0</span></div>
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="right-panel card">
+                    <div class="content-header">
+                        <div>
+                            <h2 id="contentTitle">Dashboard Admin</h2>
+                            <p class="muted" id="contentSubtitle">Kelola data quiz Anda</p>
+                        </div>
+                        <div id="actionButtons" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                    </div>
+                    <div id="adminContent" class="admin-content">
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 20px; color: var(--text-muted);">Memuat dashboard...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <small>© 2026 QuizApp • Admin Dashboard</small>
+                <div class="muted" style="font-size: 12px;"><span id="lastUpdated">Terakhir diupdate: -</span></div>
+            </div>
+        </footer>
+        
+        <button id="themeToggle" class="theme-switcher"><i class="fas fa-moon"></i></button>
+        
+        <div id="modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Modal Title</h3>
+                    <button class="modal-close"><i class="fas fa-times"></i></button>
                 </div>
-            `;
-        } catch (error) { showError("Error loading courses"); }
-        return;
-    }
-    // Load soal
-    showLoading();
-    try {
-        const mataKuliahDoc = await getDoc(doc(db, "mata_kuliah", selectedMataKuliahId));
-        const courseDoc = await getDoc(doc(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId));
-        const mataKuliahName = mataKuliahDoc.exists() ? mataKuliahDoc.data().nama : '';
-        const courseName = courseDoc.exists() ? courseDoc.data().nama : '';
-        const soalSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId, "soal"));
-        currentData = soalSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        contentTitle.textContent = `Soal - ${mataKuliahName} / ${courseName}`;
-        contentSubtitle.textContent = "Kelola soal dalam course";
-        actionButtons.innerHTML = `
-            <button class="btn secondary" onclick="backToSelectCourseSoal()"><i class="fas fa-arrow-left"></i> Pilih Course Lain</button>
-            <button class="btn primary" onclick="showAddSoal()"><i class="fas fa-plus"></i> Tambah Soal</button>
-        `;
-        
-        if (currentData.length === 0) {
-            adminContent.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-question-circle"></i></div><h3>Belum ada soal</h3><button class="btn primary" onclick="showAddSoal()">Tambah Soal Pertama</button></div>`;
-            return;
-        }
-        
-        adminContent.innerHTML = `
-            <div class="data-table-container">
-                <table class="data-table">
-                    <thead><tr><th>Pertanyaan</th><th>Pilihan</th><th>Jawaban</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                        ${currentData.map(soal => `
-                            <tr>
-                                <td>${escapeHtml(soal.pertanyaan || soal.question)}</td>
-                                <td>${Object.values(soal.pilihan || {}).join(', ')}</td>
-                                <td>${soal.jawaban || soal.correct}</td>
-                                <td class="actions">
-                                    <button class="btn btn-sm secondary" onclick="editSoal('${soal.id}')"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteSoal('${soal.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                <div class="modal-body" id="modalBody"></div>
             </div>
-        `;
-        updateStats();
-    } catch (error) { showError("Gagal memuat soal"); }
-}
+        </div>
+    </div>
 
-// Load Stats
-async function loadStats() {
-    showLoading();
-    try {
-        const mataKuliahSnap = await getDocs(collection(db, "mata_kuliah"));
-        let totalSoal = 0;
-        for (const mkDoc of mataKuliahSnap.docs) {
-            const coursesSnap = await getDocs(collection(db, "mata_kuliah", mkDoc.id, "courses"));
-            for (const courseDoc of coursesSnap.docs) {
-                const soalSnap = await getDocs(collection(db, "mata_kuliah", mkDoc.id, "courses", courseDoc.id, "soal"));
-                totalSoal += soalSnap.size;
-            }
-        }
-        const quizResultsSnap = await getDocs(collection(db, "quiz_results"));
-        contentTitle.textContent = "Statistik";
-        contentSubtitle.textContent = "Ringkasan data quiz";
-        actionButtons.innerHTML = `<button class="btn secondary" onclick="loadStats()"><i class="fas fa-chart-line"></i> Refresh Statistik</button>`;
-        adminContent.innerHTML = `
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                <div class="card" style="text-align:center;"><i class="fas fa-book" style="font-size: 40px; color: #F4ACB7;"></i><h3>${mataKuliahSnap.size}</h3><p>Mata Kuliah</p></div>
-                <div class="card" style="text-align:center;"><i class="fas fa-folder" style="font-size: 40px; color: #CDB4DB;"></i><h3 id="totalCoursesStat">-</h3><p>Courses</p></div>
-                <div class="card" style="text-align:center;"><i class="fas fa-question-circle" style="font-size: 40px; color: #BDE0FE;"></i><h3>${totalSoal}</h3><p>Soal</p></div>
-                <div class="card" style="text-align:center;"><i class="fas fa-chart-bar" style="font-size: 40px; color: #FFC8A2;"></i><h3>${quizResultsSnap.size}</h3><p>Quiz Terselesaikan</p></div>
-            </div>
-        `;
-        // Hitung total courses
-        let totalCourses = 0;
-        for (const mkDoc of mataKuliahSnap.docs) {
-            const coursesSnap = await getDocs(collection(db, "mata_kuliah", mkDoc.id, "courses"));
-            totalCourses += coursesSnap.size;
-        }
-        document.getElementById('totalCoursesStat').textContent = totalCourses;
-    } catch (error) { showError("Gagal memuat statistik"); }
-}
-
-async function updateStats() {
-    try {
-        const mataKuliahSnap = await getDocs(collection(db, "mata_kuliah"));
-        document.getElementById('totalMataKuliah').textContent = mataKuliahSnap.size;
-        let totalCourses = 0, totalSoal = 0;
-        for (const mkDoc of mataKuliahSnap.docs) {
-            const coursesSnap = await getDocs(collection(db, "mata_kuliah", mkDoc.id, "courses"));
-            totalCourses += coursesSnap.size;
-            for (const courseDoc of coursesSnap.docs) {
-                const soalSnap = await getDocs(collection(db, "mata_kuliah", mkDoc.id, "courses", courseDoc.id, "soal"));
-                totalSoal += soalSnap.size;
-            }
-        }
-        document.getElementById('totalCourses').textContent = totalCourses;
-        document.getElementById('totalSoal').textContent = totalSoal;
-    } catch(e) { console.error(e); }
-}
-
-// CRUD Operations
-window.showAddMataKuliah = () => {
-    openModal("Tambah Mata Kuliah", `
-        <form id="formMataKuliah">
-            <div class="form-group"><label>Nama Mata Kuliah</label><input type="text" id="nama" required></div>
-            <div class="form-group"><label>Deskripsi</label><textarea id="description"></textarea></div>
-            <div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button type="submit" class="btn primary">Simpan</button></div>
-        </form>
-    `);
-    document.getElementById('formMataKuliah').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const nama = document.getElementById('nama').value;
-        const description = document.getElementById('description').value;
-        await addDoc(collection(db, "mata_kuliah"), { nama, description, totalCourses: 0 });
-        closeModal();
-        loadMataKuliah();
-    });
-};
-
-window.editMataKuliah = async (id) => {
-    const docRef = doc(db, "mata_kuliah", id);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-    openModal("Edit Mata Kuliah", `
-        <form id="formMataKuliah">
-            <div class="form-group"><label>Nama Mata Kuliah</label><input type="text" id="nama" value="${escapeHtml(data.nama)}" required></div>
-            <div class="form-group"><label>Deskripsi</label><textarea id="description">${escapeHtml(data.description || '')}</textarea></div>
-            <div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button type="submit" class="btn primary">Update</button></div>
-        </form>
-    `);
-    document.getElementById('formMataKuliah').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await updateDoc(docRef, { nama: document.getElementById('nama').value, description: document.getElementById('description').value });
-        closeModal();
-        loadMataKuliah();
-    });
-};
-
-window.deleteMataKuliah = async (id) => {
-    if (confirm("Hapus mata kuliah ini? Semua course dan soal di dalamnya akan terhapus.")) {
-        // Hapus semua subkoleksi
-        const coursesSnap = await getDocs(collection(db, "mata_kuliah", id, "courses"));
-        for (const courseDoc of coursesSnap.docs) {
-            const soalSnap = await getDocs(collection(db, "mata_kuliah", id, "courses", courseDoc.id, "soal"));
-            for (const soalDoc of soalSnap.docs) {
-                await deleteDoc(doc(db, "mata_kuliah", id, "courses", courseDoc.id, "soal", soalDoc.id));
-            }
-            await deleteDoc(doc(db, "mata_kuliah", id, "courses", courseDoc.id));
-        }
-        await deleteDoc(doc(db, "mata_kuliah", id));
-        loadMataKuliah();
-    }
-};
-
-// Course functions
-window.selectMataKuliahForCourses = (id) => {
-    selectedMataKuliahId = id;
-    loadCourses();
-};
-window.backToSelectMataKuliah = () => {
-    selectedMataKuliahId = null;
-    loadCourses();
-};
-window.showAddCourse = () => {
-    openModal("Tambah Course", `
-        <form id="formCourse">
-            <div class="form-group"><label>Nama Course</label><input type="text" id="nama" required></div>
-            <div class="form-group"><label>Deskripsi</label><textarea id="description"></textarea></div>
-            <div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button type="submit" class="btn primary">Simpan</button></div>
-        </form>
-    `);
-    document.getElementById('formCourse').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const nama = document.getElementById('nama').value;
-        const description = document.getElementById('description').value;
-        await addDoc(collection(db, "mata_kuliah", selectedMataKuliahId, "courses"), { nama, description, totalSoal: 0 });
-        // Update totalCourses di mata kuliah
-        const coursesSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses"));
-        await updateDoc(doc(db, "mata_kuliah", selectedMataKuliahId), { totalCourses: coursesSnap.size });
-        closeModal();
-        loadCourses();
-    });
-};
-window.editCourse = async (courseId) => {
-    const docRef = doc(db, "mata_kuliah", selectedMataKuliahId, "courses", courseId);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-    openModal("Edit Course", `
-        <form id="formCourse">
-            <div class="form-group"><label>Nama Course</label><input type="text" id="nama" value="${escapeHtml(data.nama)}" required></div>
-            <div class="form-group"><label>Deskripsi</label><textarea id="description">${escapeHtml(data.description || '')}</textarea></div>
-            <div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button type="submit" class="btn primary">Update</button></div>
-        </form>
-    `);
-    document.getElementById('formCourse').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await updateDoc(docRef, { nama: document.getElementById('nama').value, description: document.getElementById('description').value });
-        closeModal();
-        loadCourses();
-    });
-};
-window.deleteCourse = async (courseId) => {
-    if (confirm("Hapus course ini? Semua soal di dalamnya akan terhapus.")) {
-        const soalSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses", courseId, "soal"));
-        for (const soalDoc of soalSnap.docs) {
-            await deleteDoc(doc(db, "mata_kuliah", selectedMataKuliahId, "courses", courseId, "soal", soalDoc.id));
-        }
-        await deleteDoc(doc(db, "mata_kuliah", selectedMataKuliahId, "courses", courseId));
-        const coursesSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses"));
-        await updateDoc(doc(db, "mata_kuliah", selectedMataKuliahId), { totalCourses: coursesSnap.size });
-        loadCourses();
-    }
-};
-
-// Soal functions
-window.selectMataKuliahForSoal = (id) => {
-    selectedMataKuliahId = id;
-    selectedCourseId = null;
-    loadSoal();
-};
-window.backToSelectMataKuliahSoal = () => {
-    selectedMataKuliahId = null;
-    selectedCourseId = null;
-    loadSoal();
-};
-window.selectCourseForSoal = (courseId) => {
-    selectedCourseId = courseId;
-    loadSoal();
-};
-window.backToSelectCourseSoal = () => {
-    selectedCourseId = null;
-    loadSoal();
-};
-window.showAddSoal = () => {
-    openModal("Tambah Soal", `
-        <form id="formSoal">
-            <div class="form-group"><label>Pertanyaan</label><textarea id="pertanyaan" required></textarea></div>
-            <div class="form-group"><label>Pilihan A</label><input type="text" id="A" required></div>
-            <div class="form-group"><label>Pilihan B</label><input type="text" id="B" required></div>
-            <div class="form-group"><label>Pilihan C</label><input type="text" id="C"></div>
-            <div class="form-group"><label>Pilihan D</label><input type="text" id="D"></div>
-            <div class="form-group"><label>Jawaban (A/B/C/D)</label><select id="jawaban" required><option value="">Pilih</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
-            <div class="form-group"><label>Penjelasan (opsional)</label><textarea id="explanation"></textarea></div>
-            <div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button type="submit" class="btn primary">Simpan</button></div>
-        </form>
-    `);
-    document.getElementById('formSoal').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const pilihan = {};
-        if (document.getElementById('A').value) pilihan.A = document.getElementById('A').value;
-        if (document.getElementById('B').value) pilihan.B = document.getElementById('B').value;
-        if (document.getElementById('C').value) pilihan.C = document.getElementById('C').value;
-        if (document.getElementById('D').value) pilihan.D = document.getElementById('D').value;
-        const soalData = {
-            pertanyaan: document.getElementById('pertanyaan').value,
-            pilihan: pilihan,
-            jawaban: document.getElementById('jawaban').value,
-            explanation: document.getElementById('explanation').value
-        };
-        await addDoc(collection(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId, "soal"), soalData);
-        // Update totalSoal di course
-        const soalSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId, "soal"));
-        await updateDoc(doc(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId), { totalSoal: soalSnap.size });
-        closeModal();
-        loadSoal();
-    });
-};
-window.editSoal = async (soalId) => {
-    const docRef = doc(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId, "soal", soalId);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-    openModal("Edit Soal", `
-        <form id="formSoal">
-            <div class="form-group"><label>Pertanyaan</label><textarea id="pertanyaan" required>${escapeHtml(data.pertanyaan)}</textarea></div>
-            <div class="form-group"><label>Pilihan A</label><input type="text" id="A" value="${escapeHtml(data.pilihan?.A || '')}" required></div>
-            <div class="form-group"><label>Pilihan B</label><input type="text" id="B" value="${escapeHtml(data.pilihan?.B || '')}" required></div>
-            <div class="form-group"><label>Pilihan C</label><input type="text" id="C" value="${escapeHtml(data.pilihan?.C || '')}"></div>
-            <div class="form-group"><label>Pilihan D</label><input type="text" id="D" value="${escapeHtml(data.pilihan?.D || '')}"></div>
-            <div class="form-group"><label>Jawaban (A/B/C/D)</label><select id="jawaban" required><option value="">Pilih</option><option ${data.jawaban === 'A' ? 'selected' : ''} value="A">A</option><option ${data.jawaban === 'B' ? 'selected' : ''} value="B">B</option><option ${data.jawaban === 'C' ? 'selected' : ''} value="C">C</option><option ${data.jawaban === 'D' ? 'selected' : ''} value="D">D</option></select></div>
-            <div class="form-group"><label>Penjelasan</label><textarea id="explanation">${escapeHtml(data.explanation || '')}</textarea></div>
-            <div class="form-actions"><button type="button" class="btn secondary" onclick="closeModal()">Batal</button><button type="submit" class="btn primary">Update</button></div>
-        </form>
-    `);
-    document.getElementById('formSoal').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const pilihan = {};
-        if (document.getElementById('A').value) pilihan.A = document.getElementById('A').value;
-        if (document.getElementById('B').value) pilihan.B = document.getElementById('B').value;
-        if (document.getElementById('C').value) pilihan.C = document.getElementById('C').value;
-        if (document.getElementById('D').value) pilihan.D = document.getElementById('D').value;
-        await updateDoc(docRef, {
-            pertanyaan: document.getElementById('pertanyaan').value,
-            pilihan: pilihan,
-            jawaban: document.getElementById('jawaban').value,
-            explanation: document.getElementById('explanation').value
+    <script type="module" src="edit.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('hidden');
+                setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 500);
+            }, 500);
         });
-        closeModal();
-        loadSoal();
-    });
-};
-window.deleteSoal = async (soalId) => {
-    if (confirm("Hapus soal ini?")) {
-        await deleteDoc(doc(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId, "soal", soalId));
-        const soalSnap = await getDocs(collection(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId, "soal"));
-        await updateDoc(doc(db, "mata_kuliah", selectedMataKuliahId, "courses", selectedCourseId), { totalSoal: soalSnap.size });
-        loadSoal();
-    }
-};
-
-// Utility
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
-
-function loadDashboard() {
-    loadMataKuliah();
-}
-
-// Menambahkan fungsi global yang dibutuhkan
-window.switchView = (view) => {
-    document.querySelector(`.menu-btn[data-view="${view}"]`).click();
-};
-window.closeModal = closeModal;
-
-// Jalankan
-loadDashboard();
+        
+        function updateNetworkStatus() {
+            if (!navigator.onLine) {
+                const statusDiv = document.createElement('div');
+                statusDiv.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; background: #FF9500; color: white; text-align: center; padding: 10px; z-index: 10000;';
+                statusDiv.innerHTML = '<i class="fas fa-wifi-slash"></i> Anda sedang offline - Beberapa fitur admin mungkin terbatas';
+                document.body.prepend(statusDiv);
+                setTimeout(() => { if (statusDiv.parentNode) statusDiv.parentNode.removeChild(statusDiv); }, 5000);
+            }
+        }
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+    </script>
+    
+    <style>
+        .admin-container { display: flex; gap: 20px; min-height: 70vh; }
+        .left-panel { width: 280px; min-width: 280px; }
+        .right-panel { flex: 1; }
+        .menu { display: flex; flex-direction: column; gap: 8px; }
+        .menu-btn {
+            padding: 14px 18px; text-align: left; border: none;
+            background: var(--bg-tertiary); color: var(--text-primary);
+            border-radius: 40px; cursor: pointer; font-size: 15px;
+            display: flex; align-items: center; gap: 12px;
+            transition: all 0.2s; min-height: 50px; font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .menu-btn:hover { background: #FCE4EC; border-color: #F48FB1; }
+        .menu-btn.active {
+            background: linear-gradient(145deg, #F06292, #D81B60);
+            color: white; box-shadow: 0 6px 12px rgba(216,27,96,0.3);
+        }
+        .content-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 24px; padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .admin-content { min-height: 500px; }
+        .stats { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+        .stat-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: var(--bg-tertiary); border-radius: 30px;
+        }
+        .stat-label { color: var(--text-secondary); font-size: 14px; }
+        .stat-value { font-weight: 700; color: #AD1457; }
+        .modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
+        }
+        .modal-content {
+            background: var(--bg-secondary); border-radius: 32px;
+            max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;
+            border: 1px solid #F8BBD0; box-shadow: 0 20px 40px rgba(236,64,122,0.2);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 24px 28px; border-bottom: 1px solid #F8BBD0;
+        }
+        .modal-close {
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; font-size: 22px; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: #FCE4EC; color: #D81B60; }
+        .modal-body { padding: 28px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #AD1457; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 14px 18px; border: 2px solid #F8BBD0;
+            border-radius: 30px; background: var(--bg-tertiary);
+            color: var(--text-primary); font-size: 15px; font-family: 'Poppins', sans-serif;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none; border-color: #EC407A; box-shadow: 0 0 0 3px rgba(236,64,122,0.15);
+        }
+        .form-actions {
+            display: flex; gap: 12px; justify-content: flex-end;
+            margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);
+        }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .data-table th, .data-table td { padding: 14px 18px; text-align: left; border-bottom: 1px solid #F8BBD0; }
+        .data-table th { background: #FCE4EC; font-weight: 700; color: #AD1457; }
+        .data-table tr:hover { background: #FFF0F5; }
+        .btn-sm { padding: 6px 14px; font-size: 13px; }
+        .btn-danger { background: #E57373; color: white; }
+        .btn-danger:hover { background: #D32F2F; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.7; color: #F06292; }
+        @media (max-width: 768px) {
+            .admin-container { flex-direction: column; }
+            .left-panel { width: 100%; }
+            .content-header { flex-direction: column; gap: 16px; }
+            .modal-content { margin: 10px; }
+        }
+    </style>
+</body>
+</html>
